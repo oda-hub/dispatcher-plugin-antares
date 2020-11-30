@@ -119,7 +119,7 @@ class ANTARESAstropyTable(object):
             try:
                 table = Table.read(file_name, format=fm, delimiter=delimiter)
             except Exception as e:
-                print(e)
+                print('->problem',e)
 
         if table is None:
             raise  RuntimeError('table fine not recognized')
