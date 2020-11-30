@@ -194,10 +194,11 @@ class ANTARESDispatcher(object):
         for i in range(max_trial):
             try:
                 res = requests.get("%s" % (url), params=None)
-                print('status_code',res.tatus_code)
+                print('status_code',res.status_code)
                 if res.status_code !=200:
                     no_connection =True
                 else:
+                    no_connection=False
                     message = 'Connection OK'
                     query_out.set_done(message=message, debug_message=str(debug_message))
                     break
