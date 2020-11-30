@@ -24,7 +24,7 @@ from cdci_data_analysis.analysis.parameters import *
 
 from .antares_dataserver_dispatcher import ANTARESDispatcher
 
-from .antares_table_query import ANTARESTableQuery,ANTARESpectrumQuery
+from .antares_table_query import ANTARESpectrumQuery
 
 
 def common_instr_query():
@@ -72,7 +72,7 @@ def antares_factory():
                       data_serve_conf_file=conf_file,
                       src_query=src_query,
                       instrumet_query=instr_query,
-                      product_queries_list=[antares_table_query,antares_spectrum_query],
+                      product_queries_list=[antares_spectrum_query],
                       data_server_query_class=ANTARESDispatcher,
                       query_dictionary=query_dictionary)
 
