@@ -53,10 +53,10 @@ from .antares_dataserver_dispatcher import ANTARESDispatcher,ANTARESAnalysisExce
 
 class ANTARESAstropyTable(object):
     def __init__(self,
-                 name,
                  table,
                  meta_data,
-                 src_name):
+                 name='antares_table',
+                 src_name=''):
 
         self.src_name=src_name
         self.name=name
@@ -122,7 +122,7 @@ class ANTARESAstropyTable(object):
         if hasattr(table, 'meta'):
             meta = table.meta
 
-        return cls(table, name, meta_data=meta)
+        return cls(table, meta_data=meta)
 
 
 
