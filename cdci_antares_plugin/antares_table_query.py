@@ -110,23 +110,14 @@ class ANTARESAstropyTable(object):
 
     @classmethod
     def from_file(cls,file_name,name=None,delimiter=None,format=None):
-        format_list = ['ascii.ecsv', 'fits']
-        if format is not None:
-            format_list=[format]
 
-        table=None
-        for fm in format_list:
-            #try:
-            if fm=='fits':
-                table = Table.read(file_name, format=fm)
-            elif fm=='ascii.ecsv':
-                table = Table.read(file_name, format=fm,delimiter=delimiter)
-           #except Exception as e:
-          #      print('->problem',e)
+        if format=='fits':
+            print('==>')
+            table = Table.read(file_name, format=format)
+        elif format=='ascii.ecsv':
+            table = Table.read(file_name, format=format,delimiter=delimiter)
 
-        if table is None:
-            raise  RuntimeError('table fine not recognized')
-
+     
         meta = None
 
         if hasattr(table, 'meta'):
@@ -279,9 +270,9 @@ class ANTARESpectrumQuery(ProductQuery):
 
 
             #if api==False:
-            print('--->, query_prod.meta_data',config,query_prod.meta_data)
+            print('--->, query_prod.meta_data',query_prod.meta_data)
 
-            print('--->, file path', config, query_prod.file_path)
+            print('--->, file path', query_prod.file_path)
             script, div = get_spectrum_plot(query_prod.file_path)
 
             #res, query_out=q.run_query()
