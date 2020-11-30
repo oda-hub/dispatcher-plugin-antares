@@ -281,7 +281,7 @@ class ANTARESpectrumQuery(ProductQuery):
             q = ANTARESDispatcher(instrument=instrument,
                                 config=config,
                                 param_dict=param_dict,
-                                task='/api/v1.0/antares/plot-ul-envelope')
+                                task='api/v1.0/antares/plot-ul-envelope')
 
             res, query_out=q.run_query()
             #print('=>>>> figure res ',res.json())
