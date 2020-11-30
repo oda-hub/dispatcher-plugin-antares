@@ -167,7 +167,7 @@ class ANTARESTable(BaseQueryProduct):
         pass
 
     @classmethod
-    def build_from_res(cls,res,out_dir=None,prod_prefix='magic_table'):
+    def build_from_res(cls,res,out_dir=None,prod_prefix='antares_table'):
 
 
         prod_list = []
