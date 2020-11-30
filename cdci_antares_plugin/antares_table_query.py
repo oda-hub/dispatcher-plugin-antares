@@ -110,7 +110,7 @@ class ANTARESAstropyTable(object):
     def from_file(cls,file_name,name=None,delimiter=None,format=None):
 
         if format=='fits':
-            print('==>')
+            print('==>',file_name)
             table = Table.read(file_name, format=format)
         elif format=='ascii.ecsv':
             table = Table.read(file_name, format=format,delimiter=delimiter)
