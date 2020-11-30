@@ -276,9 +276,6 @@ class ANTARESpectrumQuery(ProductQuery):
             #if api==False:
             print('--->, query_prod.meta_data',config,query_prod.meta_data)
             param_dict={}
-            param_dict['file_name']=''
-
-
             param_dict['table_file']=query_prod.file_path
 
             q = ANTARESDispatcher(instrument=instrument,
