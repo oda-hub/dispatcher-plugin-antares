@@ -170,11 +170,6 @@ class ANTARESTable(BaseQueryProduct):
     def build_from_res(cls,res,out_dir=None,prod_prefix='magic_table'):
 
 
-        MWL_files=[]
-        MAGIC_files=[]
-        #for
-
-
         prod_list = []
 
         if out_dir is None:
@@ -212,12 +207,12 @@ class ANTARESTable(BaseQueryProduct):
 
 
 
-class ANTARESTableQuery(ProductQuery):
+class ANTARESpectrumQuery(ProductQuery):
 
     def __init__(self, name):
 
-        super(ANTARESTableQuery, self).__init__(name)
-        self.product_type='magic_table'
+        super(ANTARESpectrumQuery, self).__init__(name)
+        self.product_type='antares_spectrum'
 
     def build_product_list(self, instrument, res, out_dir, prod_prefix='',api=False):
 
@@ -232,45 +227,40 @@ class ANTARESTableQuery(ProductQuery):
 
     def get_data_server_query(self, instrument,config=None):
 
-
         src_name = instrument.get_par_by_name('src_name').value
 
         RA = instrument.get_par_by_name('RA').value
         DEC = instrument.get_par_by_name('DEC').value
         ROI = instrument.get_par_by_name('radius').value
-        use_internal_resolver= eval(instrument.get_par_by_name('use_internal_resolver').value)
-        param_dict=self.set_instr_dictionaries(target_name=src_name,
-                                               ra=RA,
+        index_min=1.5
+        index_max=3.0
+        param_dict=self.set_instr_dictionaries(ra=RA,
                                                dec=DEC,
-                                               search_radius=ROI,
-                                               product_type=self.product_type,
-                                               use_internal_resolver=use_internal_resolver)
+                                               ROI=ROI,
+                                               index_min=index_min,
+                                               index_max=index_max)
 
         #print ('build here',config,instrument)
-        q = ANTARESDispatcher(instrument=instrument,config=config,param_dict=param_dict,task='api/v1.0/magic/get-ul-table')
+        q = ANTARESDispatcher(instrument=instrument,config=config,param_dict=param_dict,task='api/v1.0/antares/get-ul-table')
 
         return q
 
 
-    def set_instr_dictionaries(self, target_name,
-                               paper_id=None,
-                               ra=None,
+    def set_instr_dictionaries(ra=None,
                                dec=None,
-                               search_radius=None,
-                               product_type='magic_table',
-                               use_internal_resolver=False):
-        _prod_name_map_={}
-        _prod_name_map_['antares_spectrum'] = 'sed'
-        _prod_name_map_['antares_table'] = 'table'
-        return  dict(
-            target_name=target_name,
-            paper_id=paper_id,
-            ra=ra,
-            dec=dec,
-            search_radius=search_radius,
-            product_type=_prod_name_map_[product_type],
-            get_products=True,
-            resolve=use_internal_resolver)
+                               ROI=None,
+                               product_type='antares_spectrum',
+                               #use_internal_resolver=False,
+                               index_min=1.5,
+                               index_max=3.0):
+
+        return  dict(ra=ra,
+                    dec=dec,
+                    ROI=ROI,
+                    index_min=index_min,
+                    index_max=index_max,
+                    get_products=True)
+        #            resolve=use_internal_resolver)
 
 
     def process_product_method(self, instrument, prod_list,api=False,config=None):
@@ -341,21 +331,5 @@ class ANTARESTableQuery(ProductQuery):
         return query_out
 
 
-class ANTARESpectrumQuery(ANTARESTableQuery):
 
-    def __init__(self, name):
 
-        super(ANTARESpectrumQuery, self).__init__(name)
-        self.product_type='antares_spectrum'
-
-class ANTARESLCQuery(ANTARESTableQuery):
-    def __init__(self, name):
-
-        super(ANTARESLCQuery, self).__init__(name)
-        self.product_type = 'antares_lc'
-
-class ANTARESImageQuery(ANTARESTableQuery):
-    def __init__(self, name):
-
-        super(ANTARESImageQuery, self).__init__(name)
-        self.product_type = 'antares_image'

@@ -26,7 +26,7 @@ from cdci_data_analysis.analysis.job_manager import  Job
 from cdci_data_analysis.analysis.io_helper import FilePath
 from cdci_data_analysis.analysis.products import  QueryOutput
 
-from antares_data_server.backend_api import APIerror
+from antares_data_server.backend_api import APIError
 
 import json
 import traceback

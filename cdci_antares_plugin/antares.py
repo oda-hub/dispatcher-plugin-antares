@@ -57,12 +57,10 @@ def antares_factory():
                                   catalog=None,
                                   catalog_name='user_catalog')
 
-    antares_table_query = ANTARESTableQuery('antares_table_query')
     antares_spectrum_query= ANTARESpectrumQuery('antares_spectrum_query')
 
 
     query_dictionary = {}
-    query_dictionary['antares_table'] = 'antares_table_query'
     query_dictionary['antares_spectrum'] = 'antares_spectrum_query'
 
     # query_dictionary['update_image'] = 'update_image'
