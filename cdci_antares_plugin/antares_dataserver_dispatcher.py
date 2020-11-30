@@ -189,11 +189,12 @@ class ANTARESDispatcher(object):
         print('url', url)
 
         res = requests.get("%s" % (url), params=None)
-        time.sleep(sleep_s)
+
 
         for i in range(max_trial):
             try:
                 res = requests.get("test-connection")
+                print('status_code',status_code)
                 if res.status_code !=200:
                     no_connection =True
                 else:
