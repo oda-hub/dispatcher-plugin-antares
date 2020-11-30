@@ -112,7 +112,7 @@ class ANTARESAstropyTable(object):
     def from_file(cls,file_name,name=None,delimiter=None,format=None):
         format_list = ['ascii.ecsv', 'fits']
         if format is not None:
-            format_list=[format]
+            format_list=['format']
 
         table=None
         for fm in format_list:
