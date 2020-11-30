@@ -30,6 +30,8 @@ import  json
 import pathlib
 from astropy.io import ascii
 import base64
+from astropy.units import Unit
+from .plot_tools import  ScatterPlot
 
 try:
     from StringIO import StringIO
@@ -44,7 +46,7 @@ from cdci_data_analysis.analysis.queries import ProductQuery
 from cdci_data_analysis.analysis.products import BaseQueryProduct,QueryProductList,QueryOutput
 import os
 
-from .antares_dataserver_dispatcher import ANTARESDispatcher
+from .antares_dataserver_dispatcher import ANTARESDispatcher,ANTARESAnalysisException
 
 
 
@@ -275,20 +277,16 @@ class ANTARESpectrumQuery(ProductQuery):
 
             #if api==False:
             print('--->, query_prod.meta_data',config,query_prod.meta_data)
-            param_dict={}
-            param_dict['file_path']=query_prod.file_path
 
-            q = ANTARESDispatcher(instrument=instrument,
-                                config=config,
-                                param_dict=param_dict,
-                                task='api/v1.0/antares/plot-ul-envelope')
 
-            res, query_out=q.run_query()
+            script, div = get_spectrum_plot(query_prod.file_path)
+
+            #res, query_out=q.run_query()
             #print('=>>>> figure res ',res.json())
-            res=json.loads(res.json())
+            #res=json.loads(res.json())
             html_dict = {}
-            html_dict['script'] = res['script']
-            html_dict['div'] = res['div']
+            html_dict['script'] = script
+            html_dict['div'] = div
             plot_dict = {}
             plot_dict['image'] = html_dict
             plot_dict['header_text'] = ''
@@ -324,4 +322,39 @@ class ANTARESpectrumQuery(ProductQuery):
 
 
 
+def pl_function(energy, pl_index, norm):
+    return np.power(energy, -pl_index) *  norm
+
+
+
+
+def get_spectrum_plot(file_path):
+
+        try:
+            size=100
+
+            ul_table = ANTARESTable.from_file(file_path=file_path, format='ascii', name='ANTARES TABLE', delimiter=' ').table
+            print('-> APIPlotUL', ul_table)
+            ul_sed = np.zeros(size)
+            e_range = np.logspace(-1, 6, size)
+
+            for ID, energy in enumerate(e_range):
+                ul_sed[ID] = np.max(pl_function(energy, ul_table['Index'], ul_table['1GeV_norm']))
+
+            ul_sed =ul_sed*ul_table['1GeV_norm'].unit
+            e_range= e_range*Unit('GeV')
+            ul_sed= ul_sed * e_range  *e_range
+            sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
+                              y_axis_type='log', x_axis_type='log',title='UL')
+
+            sp1.add_errorbar(e_range, ul_sed)
+
+            script, div = sp1.get_html_draw()
+            print('-> s,d',script,div)
+
+            return script, div
+
+        except Exception as e:
+            #print('qui',e)
+            raise ANTARESAnalysisException(message='problem in plot production',debug_message=repr(e))
 
