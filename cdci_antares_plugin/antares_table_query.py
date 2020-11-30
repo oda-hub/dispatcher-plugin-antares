@@ -78,7 +78,6 @@ class ANTARESAstropyTable(object):
 
 
 
-
     def encode(self, use_binary=False, to_json=False):
 
         _o_dict = {}
@@ -106,31 +105,22 @@ class ANTARESAstropyTable(object):
     def write(self,name,format='fits',overwrite=True):
         self._table.write(name,format=format,overwrite=overwrite)
 
-    def write_fits_file(self, file_name,overwrite=True):
-        return self.write(name=file_name,overwrite=overwrite)
-
-    @classmethod
-    def from_ecsv_file(cls, file_name,):
-        return cls.from_table(Table.read(file_name, format='ascii.ecsv'))
 
 
     @classmethod
-    def from_fits_file(cls,file_name):
-        return cls.from_table(Table.read(file_name,format='fits'))
-
-    @classmethod
-    def from_file(cls,file_name):
+    def from_file(cls,file_name,name=None,delimiter=None):
         format_list=['ascii.ecsv','fits']
         cat=None
-        for f in format_list:
-            try:
-                cat= cls.from_table(Table.read(file_name,format=f))
-            except:
-                pass
 
-        if cat is None:
-            raise RuntimeError('file format for catalog not valid')
-        return cat
+        table = Table.read(file_name, format=format, delimiter=delimiter)
+
+        meta = None
+
+        if hasattr(table, 'meta'):
+            meta = table.meta
+
+        return cls(table, name, meta_data=meta)
+
 
 
 
@@ -333,7 +323,7 @@ def get_spectrum_plot(file_path):
         try:
             size=100
 
-            ul_table = ANTARESAstropyTable.from_fits_file(file_name=file_path).table
+            ul_table = ANTARESAstropyTable.from_file(file_name=file_path,format='fits').table
             print('-> APIPlotUL', ul_table)
             ul_sed = np.zeros(size)
             e_range = np.logspace(-1, 6, size)
