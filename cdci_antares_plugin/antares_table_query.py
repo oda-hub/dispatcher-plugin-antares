@@ -39,16 +39,12 @@ import pickle
 
 
 
-from astropy.io import fits as pf
-from cdci_data_analysis.analysis.io_helper import FitsFile
+
 from cdci_data_analysis.analysis.queries import ProductQuery
 from cdci_data_analysis.analysis.products import BaseQueryProduct,QueryProductList,QueryOutput
-from cdci_data_analysis.analysis.io_helper import FilePath
-from oda_api.data_products import NumpyDataProduct,NumpyDataUnit,BinaryData
-from cdci_data_analysis.configurer import DataServerConf
+import os
 
 from .antares_dataserver_dispatcher import ANTARESDispatcher
-from .antares_dataserver_dispatcher import  ANTARESAnalysisException
 
 
 
@@ -185,7 +181,7 @@ class ANTARESTable(BaseQueryProduct):
 
 
         try:
-            filename, file_extension = os.path.splitext(_o_dict['file_path'])
+            filename, file_extension = os.path.splitext(os.path.basenam(_o_dict['file_path']))
         except:
             filename = src_name
 
