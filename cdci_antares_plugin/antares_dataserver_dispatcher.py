@@ -185,16 +185,16 @@ class ANTARESDispatcher(object):
         debug_message='OK'
 
         #client = self._get_client(self.data_server_url)
-        url = "%s/%s" % (self.data_server_url, 'test-connection')
+        url = "%s/%s" % (self.data_server_url, 'api/v1.0/antares/test-connection')
         print('url', url)
 
-        res = requests.get("%s" % (url), params=None)
+
 
 
         for i in range(max_trial):
             try:
-                res = requests.get("test-connection")
-                print('status_code',status_code)
+                res = requests.get("%s" % (url), params=None)
+                print('status_code',res.tatus_code)
                 if res.status_code !=200:
                     no_connection =True
                 else:
@@ -230,7 +230,7 @@ class ANTARESDispatcher(object):
         query_out = QueryOutput()
         has_data=True
         try:
-            url = "%s/%s" % (self.data_server_url, 'test-connection')
+            url = "%s/%s" % (self.data_server_url, 'api/v1.0/antares/test-connection')
             print('url', url)
             res = requests.get("%s" % (url), params=None)
             if res.status_code != 200:
