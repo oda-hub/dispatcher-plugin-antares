@@ -99,9 +99,9 @@ class ANTARESDispatcher(object):
         self.task = task
         self.param_dict = param_dict
 
-        #print ('TEST')
-        #for k in instrument.data_server_conf_dict.keys():
-        #   print ('dict:',k,instrument.data_server_conf_dict[k ])
+        print ('TEST')
+        for k in instrument.data_server_conf_dict.keys():
+           print ('dict:',k,instrument.data_server_conf_dict[k ])
 
         config = DataServerConf(data_server_url=instrument.data_server_conf_dict['data_server_url'])
         #for v in vars(config):
@@ -292,7 +292,7 @@ class ANTARESDispatcher(object):
 
 
 
-        except APIerror as e:
+        except APIError as e:
             run_query_message = 'API Exception on ANTARES backend'
             debug_message = e.message
 
