@@ -181,7 +181,7 @@ class ANTARESTable(BaseQueryProduct):
 
 
         try:
-            filename, file_extension = os.path.splitext(os.path.basenam(_o_dict['file_path']))
+            filename, file_extension = os.path.splitext(os.path.basename(_o_dict['file_path']))
         except:
             filename = src_name
 
@@ -279,7 +279,7 @@ class ANTARESpectrumQuery(ProductQuery):
             param_dict['file_name']=''
 
 
-            param_dict['file_name']=query_prod.meta_data['filename']
+            param_dict['table_file']=query_prod.file_path
 
             q = ANTARESDispatcher(instrument=instrument,
                                 config=config,
