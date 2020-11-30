@@ -236,7 +236,7 @@ class ANTARESpectrumQuery(ProductQuery):
         index_max=3.0
         param_dict=self.set_instr_dictionaries(ra=RA,
                                                dec=DEC,
-                                               ROI=ROI,
+                                               roi=ROI,
                                                index_min=index_min,
                                                index_max=index_max)
 
@@ -246,21 +246,19 @@ class ANTARESpectrumQuery(ProductQuery):
         return q
 
 
-    def set_instr_dictionaries(ra=None,
-                               dec=None,
-                               ROI=None,
-                               product_type='antares_spectrum',
-                               #use_internal_resolver=False,
-                               index_min=1.5,
-                               index_max=3.0):
+    def set_instr_dictionaries(self,ra=None,
+                                   dec=None,
+                                   roi=None,
+                                   #use_internal_resolver=False,
+                                   index_min=1.5,
+                                   index_max=3.0):
 
         return  dict(ra=ra,
                     dec=dec,
-                    ROI=ROI,
+                    roi=roi,
                     index_min=index_min,
                     index_max=index_max,
                     get_products=True)
-        #            resolve=use_internal_resolver)
 
 
     def process_product_method(self, instrument, prod_list,api=False,config=None):
