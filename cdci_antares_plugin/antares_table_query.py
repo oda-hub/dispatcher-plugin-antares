@@ -66,8 +66,6 @@ class ANTARESAstropyTable(object):
 
 
 
-
-
     @property
     def table(self):
         return self._table
@@ -116,8 +114,9 @@ class ANTARESAstropyTable(object):
             table = Table.read(file_name, format=format)
         elif format=='ascii.ecsv':
             table = Table.read(file_name, format=format,delimiter=delimiter)
+        else:
+            raise  RuntimeError('table format not understood')
 
-     
         meta = None
 
         if hasattr(table, 'meta'):
@@ -326,8 +325,8 @@ def get_spectrum_plot(file_path):
 
         try:
             size=100
-
-            ul_table = ANTARESAstropyTable.from_file(file_name=file_path,format='fits').table
+            t= ANTARESAstropyTable.from_file(file_name=file_path,format='fits')
+            ul_table = t.table
             print('-> APIPlotUL', ul_table)
             ul_sed = np.zeros(size)
             e_range = np.logspace(-1, 6, size)
