@@ -333,7 +333,7 @@ def get_spectrum_plot(file_path):
         try:
             size=100
 
-            ul_table = ANTARESTable.from_file(file_path=file_path, format='ascii', name='ANTARES TABLE', delimiter=' ').table
+            ul_table = ANTARESAstropyTable.from_file(file_path=file_path, format='ascii', name='ANTARES TABLE', delimiter=' ').table
             print('-> APIPlotUL', ul_table)
             ul_sed = np.zeros(size)
             e_range = np.logspace(-1, 6, size)
