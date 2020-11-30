@@ -109,11 +109,20 @@ class ANTARESAstropyTable(object):
         self.write(file_name,overwrite=overwrite)
 
     @classmethod
-    def from_file(cls,file_name,name=None,delimiter=None):
-        format_list=['ascii.ecsv','fits']
-        cat=None
+    def from_file(cls,file_name,name=None,delimiter=None,format=None):
+        format_list = ['ascii.ecsv', 'fits']
+        if format is not None:
+            format_list=[format]
 
-        table = Table.read(file_name, format=format, delimiter=delimiter)
+        table=None
+        for fm in format_list:
+            try:
+                table = Table.read(file_name, format=fm, delimiter=delimiter)
+            except:
+                pass
+
+        if table is None:
+            raise  RuntimeError('table fine not recognized')
 
         meta = None
 
