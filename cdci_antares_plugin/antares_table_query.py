@@ -102,10 +102,11 @@ class ANTARESAstropyTable(object):
         return _o_dict
 
 
-    def write(self,name,format='fits',overwrite=True):
-        self._table.write(name,format=format,overwrite=overwrite)
+    def write(self,file_name,format='fits',overwrite=True):
+        self._table.write(file_name,format=format,overwrite=overwrite)
 
-
+    def write_fits_file(self,file_name,overwrite=True):
+        self.write(file_name,overwrite=overwrite)
 
     @classmethod
     def from_file(cls,file_name,name=None,delimiter=None):
