@@ -112,14 +112,15 @@ class ANTARESAstropyTable(object):
     def from_file(cls,file_name,name=None,delimiter=None,format=None):
         format_list = ['ascii.ecsv', 'fits']
         if format is not None:
-            format_list=['format']
+            format_list=[format]
 
         table=None
         for fm in format_list:
-            try:
-                table = Table.read(file_name, format=fm, delimiter=delimiter)
-            except Exception as e:
-                print('->problem',e)
+            #try:
+            print('->',fm)
+            table = Table.read(file_name, format=fm, delimiter=delimiter)
+            #except Exception as e:
+            #    print('->problem',e)
 
         if table is None:
             raise  RuntimeError('table fine not recognized')
