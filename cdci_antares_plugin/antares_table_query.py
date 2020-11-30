@@ -186,6 +186,7 @@ class ANTARESTable(BaseQueryProduct):
             filename = src_name
 
         file_name=filename+'.fits'
+        t_rec.meta['filename']=file_name
         print('->file_name',file_name)
         antares_table = cls(name=src_name,
                           file_name=file_name,
@@ -278,7 +279,7 @@ class ANTARESpectrumQuery(ProductQuery):
             param_dict['file_name']=''
 
 
-            param_dict['file_name']=query_prod.meta_data['Filename']
+            param_dict['file_name']=query_prod.meta_data['filename']
 
             q = ANTARESDispatcher(instrument=instrument,
                                 config=config,
