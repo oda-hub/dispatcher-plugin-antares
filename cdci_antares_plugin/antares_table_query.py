@@ -146,8 +146,8 @@ class ANTARESpectrumQuery(ProductQuery):
         RA = instrument.get_par_by_name('RA').value
         DEC = instrument.get_par_by_name('DEC').value
         ROI = instrument.get_par_by_name('radius').value
-        index_min=1.5
-        index_max=3.0
+        index_min=instrument.get_par_by_name('index_min').value
+        index_max=instrument.get_par_by_name('index_max').value
         param_dict=self.set_instr_dictionaries(ra=RA,
                                                dec=DEC,
                                                roi=ROI,

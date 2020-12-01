@@ -50,6 +50,11 @@ def antares_factory():
 
     instr_query_pars = common_instr_query()
 
+    index_min = Float(value=1.5,  name='index_min')
+    index_max = Float(value=3.0,  name='index_max')
+    instr_query_pars.append(index_min)
+    instr_query_pars.append(index_max)
+
     instr_query = InstrumentQuery(name=' ',
                                   extra_parameters_list=instr_query_pars,
                                   input_prod_list_name=None,
