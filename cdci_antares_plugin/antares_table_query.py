@@ -7,122 +7,44 @@ from builtins import (bytes, str, open, super, range,
 
 __author__ = "Andrea Tramacere"
 
-# Standard library
-# eg copy
-# absolute import rg:from copy import deepcopy
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+import pickle
+
 import os
 
-# Dependencies
-# eg numpy
-# absolute import eg: import numpy as np
-
-# Project
-# relative import eg: from .mod import f
-
-
-
-# Project
-# relative import eg: from .mod import f
 import  numpy as np
-import pandas as pd
 from astropy.table import Table
 import  json
 import pathlib
 from astropy.io import ascii
 import base64
 from astropy.units import Unit
-from .plot_tools import  ScatterPlot
-
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-import pickle
-
-
-
 
 from cdci_data_analysis.analysis.queries import ProductQuery
-from cdci_data_analysis.analysis.products import BaseQueryProduct,QueryProductList,QueryOutput
-import os
+from cdci_data_analysis.analysis.products import BaseQueryProduct,QueryOutput
+from oda_api.data_products import  ODAAstropyTable
 
 from .antares_dataserver_dispatcher import ANTARESDispatcher,ANTARESAnalysisException
+from .plot_tools import  ScatterPlot
 
-
-
-
-class ANTARESAstropyTable(object):
+class ANTARESAstropyTable(ODAAstropyTable):
     def __init__(self,
                  table,
                  meta_data,
                  name='antares_table',
                  src_name=''):
 
+        super(ANTARESAstropyTable, self).__init__(table,name,meta_data=meta_data)
+
         self.src_name=src_name
-        self.name=name
-        self._table=table
-        self.meta_data=meta_data
 
 
 
-
-    @property
-    def table(self):
-        return self._table
-
-
-    def decode(self,enc_table):
-        pass
-
-
-
-    def encode(self, use_binary=False, to_json=False):
-
-        _o_dict = {}
-        _o_dict['binary'] = None
-        _o_dict['ascii'] = None
-
-        if use_binary is True:
-            _binarys = base64.b64encode(pickle.dumps(self.table, protocol=2)).decode('utf-8')
-            _o_dict['binary'] = _binarys
-        else:
-            fh = StringIO()
-            self.table.write(fh, format='ascii.ecsv')
-            _text = fh.getvalue()
-            fh.close()
-            _o_dict['ascii'] = _text
-
-        _o_dict['name'] = self.name
-        _o_dict['meta_data'] = json.dumps(self.meta_data)
-
-        if to_json == True:
-            _o_dict = json.dumps(_o_dict)
-        return _o_dict
-
-
-    def write(self,file_name,format='fits',overwrite=True):
-        self._table.write(file_name,format=format,overwrite=overwrite)
-
-    def write_fits_file(self,file_name,overwrite=True):
-        self.write(file_name,overwrite=overwrite)
-
-    @classmethod
-    def from_file(cls,file_name,name=None,delimiter=None,format=None):
-
-        if format=='fits':
-            print('==>',file_name)
-            table = Table.read(file_name, format=format)
-        elif format=='ascii.ecsv':
-            table = Table.read(file_name, format=format,delimiter=delimiter)
-        else:
-            raise  RuntimeError('table format not understood')
-
-        meta = None
-
-        if hasattr(table, 'meta'):
-            meta = table.meta
-
-        return cls(table, meta_data=meta)
 
 
 
@@ -182,7 +104,7 @@ class ANTARESTable(BaseQueryProduct):
 
         file_name=filename+'.fits'
         t_rec.meta['filename']=file_name
-        print('->file_name',file_name)
+        #print('->file_name',file_name)
         antares_table = cls(name=src_name,
                           file_name=file_name,
                           table=t_rec,
@@ -209,7 +131,7 @@ class ANTARESpectrumQuery(ProductQuery):
     def build_product_list(self, instrument, res, out_dir, prod_prefix='',api=False):
 
         #delta_t = instrument.get_par_by_name('time_bin')._astropy_time_delta.sec
-        print('-> res',res.json())
+        #print('-> res',res.json())
         prod_list = ANTARESTable.build_from_res(res, out_dir=out_dir)
 
         # print('spectrum_list',spectrum_list)
@@ -263,13 +185,13 @@ class ANTARESpectrumQuery(ProductQuery):
         _binary_data_list=[]
         for query_prod in prod_list.prod_list:
 
-            print('query_prod',vars(query_prod))
+            #print('query_prod',vars(query_prod))
             query_prod.write()
 
 
 
             #if api==False:
-            print('--->, query_prod.meta_data',query_prod.meta_data)
+            #print('--->, query_prod.meta_data',query_prod.meta_data)
 
             script, div = get_spectrum_plot(query_prod.file_path.path)
 
@@ -341,7 +263,7 @@ def get_spectrum_plot(file_path):
             sp1.add_errorbar(e_range, ul_sed)
 
             script, div = sp1.get_html_draw()
-            print('-> s,d',script,div)
+            #print('-> s,d',script,div)
 
             return script, div
 
