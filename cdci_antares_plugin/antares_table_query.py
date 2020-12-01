@@ -271,7 +271,7 @@ class ANTARESpectrumQuery(ProductQuery):
             #if api==False:
             print('--->, query_prod.meta_data',query_prod.meta_data)
 
-            script, div = get_spectrum_plot(query_prod.file_path.name)
+            script, div = get_spectrum_plot(query_prod.file_path.path)
 
             #res, query_out=q.run_query()
             #print('=>>>> figure res ',res.json())
