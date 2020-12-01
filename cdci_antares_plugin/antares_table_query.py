@@ -246,21 +246,30 @@ def get_spectrum_plot(file_path):
 
         try:
             size=100
-            ul_table= ANTARESAstropyTable.from_file(file_name=file_path,format='fits').table
+            ul_table= ANTARESAstropyTable.from_file(file_path=file_path,format='fits').table
 
-            ul_sed = np.zeros(size)
-            e_range = np.logspace(-1, 6, size)
+            if len(ul_table)>0:
 
-            for ID, energy in enumerate(e_range):
-                ul_sed[ID] = np.max(pl_function(energy, ul_table['Index'], ul_table['1GeV_norm']))
+                ul_sed = np.zeros(size)
+                e_range = np.logspace(-1, 6, size)
 
-            ul_sed =ul_sed*ul_table['1GeV_norm'].unit
-            e_range= e_range*Unit('GeV')
-            ul_sed= ul_sed * e_range  *e_range
-            sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
-                              y_axis_type='log', x_axis_type='log',title='UL')
+                for ID, energy in enumerate(e_range):
+                    ul_sed[ID] = np.max(pl_function(energy, ul_table['Index'], ul_table['1GeV_norm']))
+            else:
+                ul_sed=None
+                e_range=None
 
-            sp1.add_errorbar(e_range, ul_sed)
+            if ul_sed is not None:
+                ul_sed =ul_sed*ul_table['1GeV_norm'].unit
+                e_range= e_range*Unit('GeV')
+                ul_sed= ul_sed * e_range  *e_range
+                sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
+                                  y_axis_type='log', x_axis_type='log',title='UL')
+
+                sp1.add_errorbar(e_range, ul_sed)
+            else:
+                sp1 = ScatterPlot(w=600, h=400, x_label=str(Unit('GeV')), y_label='',
+                                  y_axis_type='log', x_axis_type='log', title='UL')
 
             script, div = sp1.get_html_draw()
             #print('-> s,d',script,div)
