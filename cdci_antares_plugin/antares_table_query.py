@@ -271,8 +271,7 @@ class ANTARESpectrumQuery(ProductQuery):
             #if api==False:
             print('--->, query_prod.meta_data',query_prod.meta_data)
 
-            print('--->, file path', query_prod.file_path)
-            script, div = get_spectrum_plot(query_prod.file_path)
+            script, div = get_spectrum_plot(query_prod.file_path.name)
 
             #res, query_out=q.run_query()
             #print('=>>>> figure res ',res.json())
@@ -325,10 +324,8 @@ def get_spectrum_plot(file_path):
 
         try:
             size=100
-            print('===> type(file_path)',type(file_path))
             ul_table= ANTARESAstropyTable.from_file(file_name=file_path,format='fits').table
 
-            print('-> APIPlotUL', ul_table)
             ul_sed = np.zeros(size)
             e_range = np.logspace(-1, 6, size)
 
