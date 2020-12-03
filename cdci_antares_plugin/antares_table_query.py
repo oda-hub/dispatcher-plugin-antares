@@ -266,7 +266,7 @@ def get_spectrum_plot(file_path):
                 sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
                                   y_axis_type='log', x_axis_type='log',title='UL')
 
-                sp1.add_errorbar(e_range, ul_sed)
+                sp1.add_line(e_range, ul_sed)
             else:
                 sp1 = ScatterPlot(w=600, h=400, x_label=str(Unit('GeV')), y_label='',
                                   y_axis_type='log', x_axis_type='log', title='UL')
