@@ -32,6 +32,9 @@ from oda_api.data_products import  ODAAstropyTable
 from .antares_dataserver_dispatcher import ANTARESDispatcher,ANTARESAnalysisException
 from .plot_tools import  ScatterPlot
 
+
+
+
 class ANTARESAstropyTable(ODAAstropyTable):
     def __init__(self,
                  table,
@@ -138,6 +141,26 @@ class ANTARESpectrumQuery(ProductQuery):
 
         return prod_list
 
+    def check_roi(self,v):
+        if v< 0.1 or v>2.5:
+            m = 'par ROI=%e outside ragnge [0.1 - 2.5]'%v
+            raise ANTARESAnalysisException(message=m, debug_message=m)
+        else:
+            pass
+
+    def check_index(self,v):
+        if v < 1.5 or v > 3.0:
+            m = 'par index=%e outside ragnge [1.5 - 3.0]' % v
+            raise ANTARESAnalysisException(message=m, debug_message=m)
+        else:
+            pass
+
+    def check_decl(self,v):
+        if v < -80 or v > 50:
+            m = 'par decl=%e outside ragnge [-80.0 - 50.0]' % v
+            raise ANTARESAnalysisException(message=m, debug_message=m)
+        else:
+            pass
 
     def get_data_server_query(self, instrument,config=None):
 
@@ -148,6 +171,12 @@ class ANTARESpectrumQuery(ProductQuery):
         ROI = instrument.get_par_by_name('radius').value
         index_min=instrument.get_par_by_name('index_min').value
         index_max=instrument.get_par_by_name('index_max').value
+        #TODO move this to be self-consistent with Antares backend conf
+        self.check_decl(DEC)
+        self.check_index(index_min)
+        self.check_index(index_max)
+        self.check_roi(ROI)
+
         param_dict=self.set_instr_dictionaries(ra=RA,
                                                dec=DEC,
                                                roi=ROI,

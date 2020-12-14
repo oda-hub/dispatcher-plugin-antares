@@ -75,7 +75,7 @@ class ANTARESAnalysisException(Exception):
 
 class ANTARESException(Exception):
 
-    def __init__(self, message='ANTARES analysis exception', debug_message=''):
+    def __init__(self, message='ANTARES  exception', debug_message=''):
         super(ANTARESException, self).__init__(message)
         self.message=message
         self.debug_message=debug_message
@@ -307,6 +307,19 @@ class ANTARESDispatcher(object):
                                  debug_message=debug_message)
 
             raise ANTARESException(message=run_query_message, debug_message=debug_message)
+
+        except ANTARESAnalysisException as e:
+            run_query_message = 'ANTARES Analysis Exception in run_query'
+            query_out.set_failed('run query ',
+                                 message='run query message=%s' % run_query_message,
+                                 logger=logger,
+                                 excep=e,
+                                 job_status='failed',
+                                 e_message=run_query_message,
+                                 debug_message=e)
+
+            raise ANTARESException(message=run_query_message, debug_message=e)
+
         except Exception as e:
             run_query_message = 'ANTARES UnknownException in run_query'
             query_out.set_failed('run query ',
