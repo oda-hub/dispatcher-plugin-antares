@@ -167,11 +167,11 @@ class ANTARESTable(BaseQueryProduct):
         pass
 
     @classmethod
-    def build_from_res(cls,res,out_dir=None,prod_prefix='magic_table'):
+    def build_from_res(cls,res,out_dir=None,prod_prefix='antares_table'):
 
 
         MWL_files=[]
-        MAGIC_files=[]
+        ANTARES_files=[]
         #for
 
 
@@ -217,7 +217,7 @@ class ANTARESTableQuery(ProductQuery):
     def __init__(self, name):
 
         super(ANTARESTableQuery, self).__init__(name)
-        self.product_type='magic_table'
+        self.product_type='antares_table'
 
     def build_product_list(self, instrument, res, out_dir, prod_prefix='',api=False):
 
@@ -247,7 +247,7 @@ class ANTARESTableQuery(ProductQuery):
                                                use_internal_resolver=use_internal_resolver)
 
         #print ('build here',config,instrument)
-        q = ANTARESDispatcher(instrument=instrument,config=config,param_dict=param_dict,task='api/v1.0/magic/get-ul-table')
+        q = ANTARESDispatcher(instrument=instrument,config=config,param_dict=param_dict,task='api/v1.0/antares/get-ul-table')
 
         return q
 
@@ -257,7 +257,7 @@ class ANTARESTableQuery(ProductQuery):
                                ra=None,
                                dec=None,
                                search_radius=None,
-                               product_type='magic_table',
+                               product_type='antares_table',
                                use_internal_resolver=False):
         _prod_name_map_={}
         _prod_name_map_['antares_spectrum'] = 'sed'

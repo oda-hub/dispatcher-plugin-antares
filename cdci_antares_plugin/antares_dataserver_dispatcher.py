@@ -66,7 +66,7 @@ from contextlib import contextmanager
 
 class ANTARESAnalysisException(Exception):
 
-    def __init__(self, message='MAGIC analysis exception', debug_message=''):
+    def __init__(self, message='ANTARES analysis exception', debug_message=''):
         super(ANTARESAnalysisException, self).__init__(message)
         self.message=message
         self.debug_message=debug_message
@@ -75,7 +75,7 @@ class ANTARESAnalysisException(Exception):
 
 class ANTARESException(Exception):
 
-    def __init__(self, message='MAGIC analysis exception', debug_message=''):
+    def __init__(self, message='ANTARES analysis exception', debug_message=''):
         super(ANTARESException, self).__init__(message)
         self.message=message
         self.debug_message=debug_message
@@ -83,7 +83,7 @@ class ANTARESException(Exception):
 
 class ANTARESUnknownException(ANTARESException):
 
-    def __init__(self,message='MAGIC unknown exception',debug_message=''):
+    def __init__(self,message='ANTARES unknown exception',debug_message=''):
         super(ANTARESUnknownException, self).__init__(message, debug_message)
 
 
@@ -92,7 +92,7 @@ class ANTARESUnknownException(ANTARESException):
 class ANTARESDispatcher(object):
 
     def __init__(self,config=None,task=None,param_dict=None,instrument=None):
-        print('--> building class MAGICDispatcher',instrument,config)
+        print('--> building class ANTARESDispatcher',instrument,config)
         #simple_logger.log()
         #simple_logger.logger.setLevel(logging.ERROR)
 
@@ -293,7 +293,7 @@ class ANTARESDispatcher(object):
 
 
         except APIerror as e:
-            run_query_message = 'API Exception on MAGIC backend'
+            run_query_message = 'API Exception on ANTARES backend'
             debug_message = e.message
 
             query_out.set_failed('run query ',
@@ -306,7 +306,7 @@ class ANTARESDispatcher(object):
 
             raise ANTARESException(message=run_query_message, debug_message=debug_message)
         except Exception as e:
-            run_query_message = 'MAGIC UnknownException in run_query'
+            run_query_message = 'ANTARES UnknownException in run_query'
             query_out.set_failed('run query ',
                                  message='run query message=%s' % run_query_message,
                                  logger=logger,
