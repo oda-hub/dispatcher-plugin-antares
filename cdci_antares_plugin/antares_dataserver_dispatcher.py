@@ -26,7 +26,7 @@ from cdci_data_analysis.analysis.job_manager import  Job
 from cdci_data_analysis.analysis.io_helper import FilePath
 from cdci_data_analysis.analysis.products import  QueryOutput
 
-from antares_data_server.backend_api import APIerror
+from cdci_data_analysis.analysis.exceptions import APIerror
 
 import json
 import traceback
@@ -291,7 +291,7 @@ class ANTARESDispatcher(object):
 
 
 
-
+        # TODO: how can it be thrown?
         except APIerror as e:
             run_query_message = 'API Exception on ANTARES backend'
             debug_message = e.message
