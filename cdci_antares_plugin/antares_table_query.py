@@ -24,7 +24,7 @@ import os
 # Project
 # relative import eg: from .mod import f
 import  numpy as np
-import pandas as pd
+#import pandas as pd
 from astropy.table import Table
 import  json
 import pathlib
