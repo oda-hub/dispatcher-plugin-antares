@@ -185,19 +185,16 @@ class ANTARESDispatcher(object):
         url = "%s/%s" % (self.data_server_url, 'test-connection')
         print('url', url)
 
-        res = requests.get("%s" % (url), params=None)
-        time.sleep(sleep_s)
-
         for i in range(max_trial):
             try:
-                res = requests.get("test-connection")
-                if res.status_code !=200:
-                    no_connection =True
+                res = requests.get("%s" % (url), params=None)
+                if res.status_code != 200:
+                    no_connection = True
                 else:
+                    no_connection = False
                     message = 'Connection OK'
                     query_out.set_done(message=message, debug_message=str(debug_message))
                     break
-
             except Exception as e:
                 no_connection = True
 
@@ -211,7 +208,7 @@ class ANTARESDispatcher(object):
             query_out.set_failed(message,
                                  message='connection_status=%s' % connection_status_message,
                                  logger=logger,
-                                 excep=e,
+                                 excep=e, # may be referenced before assignment
                                  e_message=message,
                                  debug_message=debug_message)
 
