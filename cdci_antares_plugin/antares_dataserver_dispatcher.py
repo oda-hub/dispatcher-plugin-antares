@@ -103,14 +103,17 @@ class ANTARESDispatcher(object):
         #for k in instrument.data_server_conf_dict.keys():
         #   print ('dict:',k,instrument.data_server_conf_dict[k ])
         
-        # TODO: fixed quickly, but what is really going on here?
-        if config is None:
-            config = DataServerConf.from_conf_dict(instrument.data_server_conf_dict)
+        
+        config = DataServerConf.from_conf_dict(instrument.data_server_conf_dict)
         #for v in vars(config):
         #   print('attr:', v, getattr(config, v))
 
 
-            print('--> config passed to init',config)
+        print('--> config passed to init',config)
+
+        if config is not None:
+            
+            pass
 
 
         elif instrument is not None and hasattr(instrument,'data_server_conf_dict'):
