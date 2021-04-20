@@ -102,25 +102,22 @@ class ANTARESDispatcher(object):
         #print ('TEST')
         #for k in instrument.data_server_conf_dict.keys():
         #   print ('dict:',k,instrument.data_server_conf_dict[k ])
-
-        config = DataServerConf(data_server_url=instrument.data_server_conf_dict['data_server_url'])
+        
+        # TODO: fixed quickly, but what is really going on here?
+        if config is None:
+            config = DataServerConf.from_conf_dict(instrument.data_server_conf_dict)
         #for v in vars(config):
         #   print('attr:', v, getattr(config, v))
 
 
-        print('--> config passed to init',config)
-
-        if config is not None:
-
-            pass
-
+            print('--> config passed to init',config)
 
 
         elif instrument is not None and hasattr(instrument,'data_server_conf_dict'):
 
             print('--> from data_server_conf_dict')
             try:
-                config = DataServerConf(data_server_url=instrument.data_server_conf_dict['data_server_url'])
+                config = DataServerConf.from_conf_dict(instrument.data_server_conf_dict)
 
                 print('config', config)
                 for v in vars(config):
