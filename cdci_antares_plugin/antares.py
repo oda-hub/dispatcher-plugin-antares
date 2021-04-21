@@ -37,9 +37,11 @@ def common_instr_query():
     #spec_window = ParameterRange(E1_keV, E2_keV, 'spec_window')
     #instr_query_pars = [spec_window]
 
-    radius = Angle(value=5.0, units='deg', name='radius')
-    use_internal_resolver= Parameter(value='False',name='use_internal_resolver',allowed_values=['False','True'])
-    instr_query_pars = [radius,use_internal_resolver]
+    radius = Angle(value=2.5, units='deg', name='radius')
+    use_internal_resolver = Parameter(value='False',name='use_internal_resolver',allowed_values=['False','True'])
+    index_min = Float(value='1.5', name='index_min')
+    index_max = Float(value='1.5', name='index_max')
+    instr_query_pars = [radius,use_internal_resolver,index_min,index_max]
 
     return instr_query_pars
 

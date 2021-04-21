@@ -238,11 +238,15 @@ class ANTARESTableQuery(ProductQuery):
         RA = instrument.get_par_by_name('RA').value
         DEC = instrument.get_par_by_name('DEC').value
         ROI = instrument.get_par_by_name('radius').value
+        index_min = instrument.get_par_by_name('index_min').value
+        index_max = instrument.get_par_by_name('index_max').value
         use_internal_resolver= eval(instrument.get_par_by_name('use_internal_resolver').value)
         param_dict=self.set_instr_dictionaries(target_name=src_name,
                                                ra=RA,
                                                dec=DEC,
-                                               search_radius=ROI,
+                                               roi=ROI,
+                                               index_min=index_min,
+                                               index_max=index_max,
                                                product_type=self.product_type,
                                                use_internal_resolver=use_internal_resolver)
 
