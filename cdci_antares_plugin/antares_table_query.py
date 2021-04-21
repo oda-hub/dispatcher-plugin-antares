@@ -261,6 +261,8 @@ class ANTARESTableQuery(ProductQuery):
                                ra=None,
                                dec=None,
                                roi=None,
+                               index_min=None,
+                               index_max=None,
                                product_type='antares_table',
                                use_internal_resolver=False):
         _prod_name_map_={}
@@ -272,6 +274,8 @@ class ANTARESTableQuery(ProductQuery):
             ra=ra,
             dec=dec,
             roi=roi,
+            index_min=index_min,
+            index_max=index_max,
             product_type=_prod_name_map_[product_type],
             get_products=True,
             resolve=use_internal_resolver)
