@@ -260,7 +260,7 @@ class ANTARESTableQuery(ProductQuery):
                                paper_id=None,
                                ra=None,
                                dec=None,
-                               search_radius=None,
+                               roi=None,
                                product_type='antares_table',
                                use_internal_resolver=False):
         _prod_name_map_={}
@@ -271,7 +271,7 @@ class ANTARESTableQuery(ProductQuery):
             paper_id=paper_id,
             ra=ra,
             dec=dec,
-            search_radius=search_radius,
+            roi=roi,
             product_type=_prod_name_map_[product_type],
             get_products=True,
             resolve=use_internal_resolver)
