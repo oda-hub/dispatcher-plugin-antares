@@ -75,7 +75,8 @@ class ANTARESAnalysisException(Exception):
 
 class ANTARESException(Exception):
 
-    def __init__(self, message='ANTARES analysis exception', debug_message=''):
+
+    def __init__(self, message='ANTARES  exception', debug_message=''):
         super(ANTARESException, self).__init__(message)
         self.message=message
         self.debug_message=debug_message
@@ -99,12 +100,12 @@ class ANTARESDispatcher(object):
         self.task = task
         self.param_dict = param_dict
 
-        #print ('TEST')
-        #for k in instrument.data_server_conf_dict.keys():
-        #   print ('dict:',k,instrument.data_server_conf_dict[k ])
-        
-        
+        print ('TEST')
+        for k in instrument.data_server_conf_dict.keys():
+           print ('dict:',k,instrument.data_server_conf_dict[k ])
+
         config = DataServerConf.from_conf_dict(instrument.data_server_conf_dict)
+
         #for v in vars(config):
         #   print('attr:', v, getattr(config, v))
 
@@ -185,16 +186,18 @@ class ANTARESDispatcher(object):
         debug_message='OK'
 
         #client = self._get_client(self.data_server_url)
-        url = "%s/%s" % (self.data_server_url, 'test-connection')
+        url = "%s/%s" % (self.data_server_url, 'api/v1.0/antares/test-connection')
         print('url', url)
 
         for i in range(max_trial):
             try:
                 res = requests.get("%s" % (url), params=None)
-                if res.status_code != 200:
-                    no_connection = True
+                print('status_code',res.status_code)
+                if res.status_code !=200:
+                    no_connection =True
                 else:
-                    no_connection = False
+                    no_connection=False
+
                     message = 'Connection OK'
                     query_out.set_done(message=message, debug_message=str(debug_message))
                     break
@@ -226,7 +229,7 @@ class ANTARESDispatcher(object):
         query_out = QueryOutput()
         has_data=True
         try:
-            url = "%s/%s" % (self.data_server_url, 'test-connection')
+            url = "%s/%s" % (self.data_server_url, 'api/v1.0/antares/test-connection')
             print('url', url)
             res = requests.get("%s" % (url), params=None)
             if res.status_code != 200:
@@ -302,6 +305,19 @@ class ANTARESDispatcher(object):
                                  debug_message=debug_message)
 
             raise ANTARESException(message=run_query_message, debug_message=debug_message)
+
+        except ANTARESAnalysisException as e:
+            run_query_message = 'ANTARES Analysis Exception in run_query'
+            query_out.set_failed('run query ',
+                                 message='run query message=%s' % run_query_message,
+                                 logger=logger,
+                                 excep=e,
+                                 job_status='failed',
+                                 e_message=run_query_message,
+                                 debug_message=e)
+
+            raise ANTARESException(message=run_query_message, debug_message=e)
+
         except Exception as e:
             run_query_message = 'ANTARES UnknownException in run_query'
             query_out.set_failed('run query ',

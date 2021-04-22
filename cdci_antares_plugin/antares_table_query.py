@@ -7,132 +7,48 @@ from builtins import (bytes, str, open, super, range,
 
 __author__ = "Andrea Tramacere"
 
-# Standard library
-# eg copy
-# absolute import rg:from copy import deepcopy
-import os
-
-# Dependencies
-# eg numpy
-# absolute import eg: import numpy as np
-
-# Project
-# relative import eg: from .mod import f
-
-
-
-# Project
-# relative import eg: from .mod import f
-import  numpy as np
-#import pandas as pd
-from astropy.table import Table
-import  json
-import pathlib
-from astropy.io import ascii
-import base64
 
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
+
 import pickle
 
+import os
 
+import  numpy as np
+from astropy.table import Table
+import  json
+import pathlib
+from astropy.io import ascii
+import base64
+from astropy.units import Unit
 
-from astropy.io import fits as pf
-from cdci_data_analysis.analysis.io_helper import FitsFile
 from cdci_data_analysis.analysis.queries import ProductQuery
-from cdci_data_analysis.analysis.products import BaseQueryProduct,QueryProductList,QueryOutput
-from cdci_data_analysis.analysis.io_helper import FilePath
-from oda_api.data_products import NumpyDataProduct,NumpyDataUnit,BinaryData
-from cdci_data_analysis.configurer import DataServerConf
+from cdci_data_analysis.analysis.products import BaseQueryProduct,QueryOutput
+from oda_api.data_products import  ODAAstropyTable
 
-from .antares_dataserver_dispatcher import ANTARESDispatcher
-from .antares_dataserver_dispatcher import  ANTARESAnalysisException
+from .antares_dataserver_dispatcher import ANTARESDispatcher,ANTARESAnalysisException
+from .plot_tools import  ScatterPlot
 
 
 
 
-class ANTARESAstropyTable(object):
+class ANTARESAstropyTable(ODAAstropyTable):
     def __init__(self,
-                 name,
                  table,
                  meta_data,
-                 src_name):
+                 name='antares_table',
+                 src_name=''):
+
+        super(ANTARESAstropyTable, self).__init__(table,name,meta_data=meta_data)
 
         self.src_name=src_name
-        self.name=name
-        self._table=table
-        self.meta_data=meta_data
 
 
 
 
-
-
-    @property
-    def table(self):
-        return self._table
-
-
-    def decode(self,enc_table):
-        pass
-
-
-
-
-    def encode(self, use_binary=False, to_json=False):
-
-        _o_dict = {}
-        _o_dict['binary'] = None
-        _o_dict['ascii'] = None
-
-        if use_binary is True:
-            _binarys = base64.b64encode(pickle.dumps(self.table, protocol=2)).decode('utf-8')
-            _o_dict['binary'] = _binarys
-        else:
-            fh = StringIO()
-            self.table.write(fh, format='ascii.ecsv')
-            _text = fh.getvalue()
-            fh.close()
-            _o_dict['ascii'] = _text
-
-        _o_dict['name'] = self.name
-        _o_dict['meta_data'] = json.dumps(self.meta_data)
-
-        if to_json == True:
-            _o_dict = json.dumps(_o_dict)
-        return _o_dict
-
-
-    def write(self,name,format='fits',overwrite=True):
-        self._table.write(name,format=format,overwrite=overwrite)
-
-    def write_fits_file(self, file_name,overwrite=True):
-        return self.write(name=file_name,overwrite=overwrite)
-
-    @classmethod
-    def from_ecsv_file(cls, file_name,):
-        return cls.from_table(Table.read(file_name, format='ascii.ecsv'))
-
-
-    @classmethod
-    def from_fits_file(cls,file_name):
-        return cls.from_table(Table.read(file_name,format='fits'))
-
-    @classmethod
-    def from_file(cls,file_name):
-        format_list=['ascii.ecsv','fits']
-        cat=None
-        for f in format_list:
-            try:
-                cat= cls.from_table(Table.read(file_name,format=f))
-            except:
-                pass
-
-        if cat is None:
-            raise RuntimeError('file format for catalog not valid')
-        return cat
 
 
 
@@ -169,12 +85,6 @@ class ANTARESTable(BaseQueryProduct):
     @classmethod
     def build_from_res(cls,res,out_dir=None,prod_prefix='antares_table'):
 
-
-        MWL_files=[]
-        ANTARES_files=[]
-        #for
-
-
         prod_list = []
 
         if out_dir is None:
@@ -190,12 +100,13 @@ class ANTARESTable(BaseQueryProduct):
 
 
         try:
-            filename, file_extension = os.path.splitext(_o_dict['file_path'])
+            filename, file_extension = os.path.splitext(os.path.basename(_o_dict['file_path']))
         except:
             filename = src_name
 
         file_name=filename+'.fits'
-        print('->file_name',file_name)
+        t_rec.meta['filename']=file_name
+        #print('->file_name',file_name)
         antares_table = cls(name=src_name,
                           file_name=file_name,
                           table=t_rec,
@@ -212,73 +123,84 @@ class ANTARESTable(BaseQueryProduct):
 
 
 
-class ANTARESTableQuery(ProductQuery):
+class ANTARESpectrumQuery(ProductQuery):
 
     def __init__(self, name):
 
-        super(ANTARESTableQuery, self).__init__(name)
-        self.product_type='antares_table'
+        super(ANTARESpectrumQuery, self).__init__(name)
+        self.product_type='antares_spectrum'
 
     def build_product_list(self, instrument, res, out_dir, prod_prefix='',api=False):
 
         #delta_t = instrument.get_par_by_name('time_bin')._astropy_time_delta.sec
-        print('-> res',res.json())
+        #print('-> res',res.json())
         prod_list = ANTARESTable.build_from_res(res, out_dir=out_dir)
 
         # print('spectrum_list',spectrum_list)
 
         return prod_list
 
+    def check_roi(self,v):
+        if v< 0.1 or v>2.5:
+            m = 'par ROI=%e outside ragnge [0.1 - 2.5]'%v
+            raise ANTARESAnalysisException(message=m, debug_message=m)
+        else:
+            pass
+
+    def check_index(self,v):
+        if v < 1.5 or v > 3.0:
+            m = 'par index=%e outside ragnge [1.5 - 3.0]' % v
+            raise ANTARESAnalysisException(message=m, debug_message=m)
+        else:
+            pass
+
+    def check_decl(self,v):
+        if v < -80 or v > 50:
+            m = 'par decl=%e outside ragnge [-80.0 - 50.0]' % v
+            raise ANTARESAnalysisException(message=m, debug_message=m)
+        else:
+            pass
 
     def get_data_server_query(self, instrument,config=None):
-
 
         src_name = instrument.get_par_by_name('src_name').value
 
         RA = instrument.get_par_by_name('RA').value
         DEC = instrument.get_par_by_name('DEC').value
         ROI = instrument.get_par_by_name('radius').value
-        index_min = instrument.get_par_by_name('index_min').value
-        index_max = instrument.get_par_by_name('index_max').value
-        use_internal_resolver= eval(instrument.get_par_by_name('use_internal_resolver').value)
-        param_dict=self.set_instr_dictionaries(target_name=src_name,
-                                               ra=RA,
+
+        index_min=instrument.get_par_by_name('index_min').value
+        index_max=instrument.get_par_by_name('index_max').value
+        #TODO move this to be self-consistent with Antares backend conf
+        self.check_decl(DEC)
+        self.check_index(index_min)
+        self.check_index(index_max)
+        self.check_roi(ROI)
+
+        param_dict=self.set_instr_dictionaries(ra=RA,
                                                dec=DEC,
                                                roi=ROI,
                                                index_min=index_min,
-                                               index_max=index_max,
-                                               product_type=self.product_type,
-                                               use_internal_resolver=use_internal_resolver)
+                                               index_max=index_max)
 
         #print ('build here',config,instrument)
         q = ANTARESDispatcher(instrument=instrument,config=config,param_dict=param_dict,task='api/v1.0/antares/get-ul-table')
 
         return q
 
+    def set_instr_dictionaries(self,ra=None,
+                                   dec=None,
+                                   roi=None,
+                                   #use_internal_resolver=False,
+                                   index_min=1.5,
+                                   index_max=3.0):
 
-    def set_instr_dictionaries(self, target_name,
-                               paper_id=None,
-                               ra=None,
-                               dec=None,
-                               roi=None,
-                               index_min=None,
-                               index_max=None,
-                               product_type='antares_table',
-                               use_internal_resolver=False):
-        _prod_name_map_={}
-        _prod_name_map_['antares_spectrum'] = 'sed'
-        _prod_name_map_['antares_table'] = 'table'
-        return  dict(
-            target_name=target_name,
-            paper_id=paper_id,
-            ra=ra,
-            dec=dec,
-            roi=roi,
-            index_min=index_min,
-            index_max=index_max,
-            product_type=_prod_name_map_[product_type],
-            get_products=True,
-            resolve=use_internal_resolver)
+        return  dict(ra=ra,
+                    dec=dec,
+                    roi=roi,
+                    index_min=index_min,
+                    index_max=index_max,
+                    get_products=True)
 
 
     def process_product_method(self, instrument, prod_list,api=False,config=None):
@@ -291,30 +213,22 @@ class ANTARESTableQuery(ProductQuery):
         _binary_data_list=[]
         for query_prod in prod_list.prod_list:
 
-            print('query_prod',vars(query_prod))
+            #print('query_prod',vars(query_prod))
             query_prod.write()
 
 
 
             #if api==False:
-            print('--->, query_prod.meta_data',config,query_prod.meta_data)
-            param_dict={}
-            param_dict['file_name']=''
+            #print('--->, query_prod.meta_data',query_prod.meta_data)
 
+            script, div = get_spectrum_plot(query_prod.file_path.path)
 
-            param_dict['file_name']=query_prod.meta_data['Filename']
-
-            q = ANTARESDispatcher(instrument=instrument,
-                                config=config,
-                                param_dict=param_dict,
-                                task='/api/v1.0/antares/plot-ul-envelope')
-
-            res, query_out=q.run_query()
+            #res, query_out=q.run_query()
             #print('=>>>> figure res ',res.json())
-            res=json.loads(res.json())
+            #res=json.loads(res.json())
             html_dict = {}
-            html_dict['script'] = res['script']
-            html_dict['div'] = res['div']
+            html_dict['script'] = script
+            html_dict['div'] = div
             plot_dict = {}
             plot_dict['image'] = html_dict
             plot_dict['header_text'] = ''
@@ -349,21 +263,48 @@ class ANTARESTableQuery(ProductQuery):
         return query_out
 
 
-class ANTARESpectrumQuery(ANTARESTableQuery):
 
-    def __init__(self, name):
+def pl_function(energy, pl_index, norm):
+    return np.power(energy, -pl_index) *  norm
 
-        super(ANTARESpectrumQuery, self).__init__(name)
-        self.product_type='antares_spectrum'
 
-class ANTARESLCQuery(ANTARESTableQuery):
-    def __init__(self, name):
 
-        super(ANTARESLCQuery, self).__init__(name)
-        self.product_type = 'antares_lc'
 
-class ANTARESImageQuery(ANTARESTableQuery):
-    def __init__(self, name):
+def get_spectrum_plot(file_path):
 
-        super(ANTARESImageQuery, self).__init__(name)
-        self.product_type = 'antares_image'
+        try:
+            size=100
+            ul_table= ANTARESAstropyTable.from_file(file_path=file_path,format='fits').table
+
+            if len(ul_table)>0:
+
+                ul_sed = np.zeros(size)
+                e_range = np.logspace(-1, 6, size)
+
+                for ID, energy in enumerate(e_range):
+                    ul_sed[ID] = np.max(pl_function(energy, ul_table['Index'], ul_table['1GeV_norm']))
+            else:
+                ul_sed=None
+                e_range=None
+
+            if ul_sed is not None:
+                ul_sed =ul_sed*ul_table['1GeV_norm'].unit
+                e_range= e_range*Unit('GeV')
+                ul_sed= ul_sed * e_range  *e_range
+                sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
+                                  y_axis_type='log', x_axis_type='log',title='UL')
+
+                sp1.add_line(e_range, ul_sed)
+            else:
+                sp1 = ScatterPlot(w=600, h=400, x_label=str(Unit('GeV')), y_label='',
+                                  y_axis_type='log', x_axis_type='log', title='UL')
+
+            script, div = sp1.get_html_draw()
+            #print('-> s,d',script,div)
+
+            return script, div
+
+        except Exception as e:
+            #print('qui',e)
+            raise ANTARESAnalysisException(message='problem in plot production',debug_message=repr(e))
+
