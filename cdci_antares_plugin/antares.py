@@ -39,9 +39,7 @@ def common_instr_query():
 
     radius = Angle(value=2.5, units='deg', name='radius')
     use_internal_resolver = Parameter(value='False',name='use_internal_resolver',allowed_values=['False','True'])
-    index_min = Float(value='1.5', name='index_min')
-    index_max = Float(value='1.5', name='index_max')
-    instr_query_pars = [radius,use_internal_resolver,index_min,index_max]
+    instr_query_pars = [radius,use_internal_resolver]
 
     return instr_query_pars
 
@@ -61,7 +59,7 @@ def antares_factory():
     instr_query_pars.append(index_min)
     instr_query_pars.append(index_max)
 
-    instr_query = InstrumentQuery(name=' ',
+    instr_query = InstrumentQuery(name='instr_query',
                                   extra_parameters_list=instr_query_pars,
                                   input_prod_list_name=None,
                                   input_prod_value=None,
