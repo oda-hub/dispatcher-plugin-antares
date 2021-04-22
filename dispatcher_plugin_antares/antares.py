@@ -16,7 +16,7 @@ __author__ = "Andrea Tramacere"
 # relative import eg: from .mod import f
 
 
-from cdci_antares_plugin import conf_file, conf_dir
+from dispatcher_plugin_antares import conf_file, conf_dir
 
 from cdci_data_analysis.analysis.queries import *
 from cdci_data_analysis.analysis.instrument import Instrument

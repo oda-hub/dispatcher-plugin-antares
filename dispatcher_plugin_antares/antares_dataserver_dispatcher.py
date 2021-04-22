@@ -19,7 +19,7 @@ import json
 # relative import eg: from .mod import f
 import  logging
 import  simple_logger
-from cdci_antares_plugin import conf_file as plugin_conf_file
+from dispatcher_plugin_antares import conf_file as plugin_conf_file
 from cdci_data_analysis.configurer import DataServerConf
 from cdci_data_analysis.analysis.queries import  *
 from cdci_data_analysis.analysis.job_manager import  Job
