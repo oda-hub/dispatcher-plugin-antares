@@ -2,3 +2,4 @@ cdci_data_analysis
 #pandas
 astropy
 simple_logger
+numpy

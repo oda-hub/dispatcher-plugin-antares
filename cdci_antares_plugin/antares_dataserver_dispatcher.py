@@ -26,7 +26,7 @@ from cdci_data_analysis.analysis.job_manager import  Job
 from cdci_data_analysis.analysis.io_helper import FilePath
 from cdci_data_analysis.analysis.products import  QueryOutput
 
-from antares_data_server.backend_api import APIerror
+from antares_data_server.backend_api import APIError
 
 import json
 import traceback
@@ -66,7 +66,7 @@ from contextlib import contextmanager
 
 class ANTARESAnalysisException(Exception):
 
-    def __init__(self, message='MAGIC analysis exception', debug_message=''):
+    def __init__(self, message='ANTARES analysis exception', debug_message=''):
         super(ANTARESAnalysisException, self).__init__(message)
         self.message=message
         self.debug_message=debug_message
@@ -75,7 +75,7 @@ class ANTARESAnalysisException(Exception):
 
 class ANTARESException(Exception):
 
-    def __init__(self, message='MAGIC analysis exception', debug_message=''):
+    def __init__(self, message='ANTARES  exception', debug_message=''):
         super(ANTARESException, self).__init__(message)
         self.message=message
         self.debug_message=debug_message
@@ -83,7 +83,7 @@ class ANTARESException(Exception):
 
 class ANTARESUnknownException(ANTARESException):
 
-    def __init__(self,message='MAGIC unknown exception',debug_message=''):
+    def __init__(self,message='ANTARES unknown exception',debug_message=''):
         super(ANTARESUnknownException, self).__init__(message, debug_message)
 
 
@@ -92,16 +92,16 @@ class ANTARESUnknownException(ANTARESException):
 class ANTARESDispatcher(object):
 
     def __init__(self,config=None,task=None,param_dict=None,instrument=None):
-        print('--> building class MAGICDispatcher',instrument,config)
+        print('--> building class ANTARESDispatcher',instrument,config)
         #simple_logger.log()
         #simple_logger.logger.setLevel(logging.ERROR)
 
         self.task = task
         self.param_dict = param_dict
 
-        #print ('TEST')
-        #for k in instrument.data_server_conf_dict.keys():
-        #   print ('dict:',k,instrument.data_server_conf_dict[k ])
+        print ('TEST')
+        for k in instrument.data_server_conf_dict.keys():
+           print ('dict:',k,instrument.data_server_conf_dict[k ])
 
         config = DataServerConf(data_server_url=instrument.data_server_conf_dict['data_server_url'])
         #for v in vars(config):
@@ -185,18 +185,20 @@ class ANTARESDispatcher(object):
         debug_message='OK'
 
         #client = self._get_client(self.data_server_url)
-        url = "%s/%s" % (self.data_server_url, 'test-connection')
+        url = "%s/%s" % (self.data_server_url, 'api/v1.0/antares/test-connection')
         print('url', url)
 
-        res = requests.get("%s" % (url), params=None)
-        time.sleep(sleep_s)
+
+
 
         for i in range(max_trial):
             try:
-                res = requests.get("test-connection")
+                res = requests.get("%s" % (url), params=None)
+                print('status_code',res.status_code)
                 if res.status_code !=200:
                     no_connection =True
                 else:
+                    no_connection=False
                     message = 'Connection OK'
                     query_out.set_done(message=message, debug_message=str(debug_message))
                     break
@@ -229,7 +231,7 @@ class ANTARESDispatcher(object):
         query_out = QueryOutput()
         has_data=True
         try:
-            url = "%s/%s" % (self.data_server_url, 'test-connection')
+            url = "%s/%s" % (self.data_server_url, 'api/v1.0/antares/test-connection')
             print('url', url)
             res = requests.get("%s" % (url), params=None)
             if res.status_code != 200:
@@ -292,8 +294,8 @@ class ANTARESDispatcher(object):
 
 
 
-        except APIerror as e:
-            run_query_message = 'API Exception on MAGIC backend'
+        except APIError as e:
+            run_query_message = 'API Exception on ANTARES backend'
             debug_message = e.message
 
             query_out.set_failed('run query ',
@@ -305,8 +307,21 @@ class ANTARESDispatcher(object):
                                  debug_message=debug_message)
 
             raise ANTARESException(message=run_query_message, debug_message=debug_message)
+
+        except ANTARESAnalysisException as e:
+            run_query_message = 'ANTARES Analysis Exception in run_query'
+            query_out.set_failed('run query ',
+                                 message='run query message=%s' % run_query_message,
+                                 logger=logger,
+                                 excep=e,
+                                 job_status='failed',
+                                 e_message=run_query_message,
+                                 debug_message=e)
+
+            raise ANTARESException(message=run_query_message, debug_message=e)
+
         except Exception as e:
-            run_query_message = 'MAGIC UnknownException in run_query'
+            run_query_message = 'ANTARES UnknownException in run_query'
             query_out.set_failed('run query ',
                                  message='run query message=%s' % run_query_message,
                                  logger=logger,
