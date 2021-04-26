@@ -31,14 +31,14 @@ print ('packs',packs)
 include_package_data=True
 
 scripts_list=glob.glob('./bin/*')
-setup(name='cdci_antares_plugin',
+setup(name='dispatcher_plugin_antares',
       version=1.0,
       description='ANTARES plugin  for CDCI online data analysis',
       author='Andrea Tramacere',
       author_email='andrea.tramacere@unige.ch',
       scripts=scripts_list,
       packages=packs,
-      package_data={'cdci_antares_plugin':['config_dir/*']},
+      package_data={'dispatcher_plugin_antares':['config_dir/*']},
       include_package_data=True,
       install_requires=install_req,
 )

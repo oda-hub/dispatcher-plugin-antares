@@ -16,7 +16,7 @@ __author__ = "Andrea Tramacere"
 # relative import eg: from .mod import f
 
 
-from cdci_antares_plugin import conf_file, conf_dir
+from dispatcher_plugin_antares import conf_file, conf_dir
 
 from cdci_data_analysis.analysis.queries import *
 from cdci_data_analysis.analysis.instrument import Instrument
@@ -37,8 +37,8 @@ def common_instr_query():
     #spec_window = ParameterRange(E1_keV, E2_keV, 'spec_window')
     #instr_query_pars = [spec_window]
 
-    radius = Angle(value=5.0, units='deg', name='radius')
-    use_internal_resolver= Parameter(value='False',name='use_internal_resolver',allowed_values=['False','True'])
+    radius = Angle(value=2.5, units='deg', name='radius')
+    use_internal_resolver = Parameter(value='False',name='use_internal_resolver',allowed_values=['False','True'])
     instr_query_pars = [radius,use_internal_resolver]
 
     return instr_query_pars
@@ -59,7 +59,7 @@ def antares_factory():
     instr_query_pars.append(index_min)
     instr_query_pars.append(index_max)
 
-    instr_query = InstrumentQuery(name=' ',
+    instr_query = InstrumentQuery(name='instr_query',
                                   extra_parameters_list=instr_query_pars,
                                   input_prod_list_name=None,
                                   input_prod_value=None,

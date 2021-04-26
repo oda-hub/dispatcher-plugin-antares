@@ -85,7 +85,6 @@ class ANTARESTable(BaseQueryProduct):
     @classmethod
     def build_from_res(cls,res,out_dir=None,prod_prefix='antares_table'):
 
-
         prod_list = []
 
         if out_dir is None:
@@ -169,6 +168,7 @@ class ANTARESpectrumQuery(ProductQuery):
         RA = instrument.get_par_by_name('RA').value
         DEC = instrument.get_par_by_name('DEC').value
         ROI = instrument.get_par_by_name('radius').value
+
         index_min=instrument.get_par_by_name('index_min').value
         index_max=instrument.get_par_by_name('index_max').value
         #TODO move this to be self-consistent with Antares backend conf
@@ -187,7 +187,6 @@ class ANTARESpectrumQuery(ProductQuery):
         q = ANTARESDispatcher(instrument=instrument,config=config,param_dict=param_dict,task='api/v1.0/antares/get-ul-table')
 
         return q
-
 
     def set_instr_dictionaries(self,ra=None,
                                    dec=None,

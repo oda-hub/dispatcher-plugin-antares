@@ -19,14 +19,14 @@ import json
 # relative import eg: from .mod import f
 import  logging
 import  simple_logger
-from cdci_antares_plugin import conf_file as plugin_conf_file
+from dispatcher_plugin_antares import conf_file as plugin_conf_file
 from cdci_data_analysis.configurer import DataServerConf
 from cdci_data_analysis.analysis.queries import  *
 from cdci_data_analysis.analysis.job_manager import  Job
 from cdci_data_analysis.analysis.io_helper import FilePath
 from cdci_data_analysis.analysis.products import  QueryOutput
 
-from antares_data_server.backend_api import APIError
+from cdci_data_analysis.analysis.exceptions import APIerror
 
 import json
 import traceback
@@ -75,6 +75,7 @@ class ANTARESAnalysisException(Exception):
 
 class ANTARESException(Exception):
 
+
     def __init__(self, message='ANTARES  exception', debug_message=''):
         super(ANTARESException, self).__init__(message)
         self.message=message
@@ -103,7 +104,8 @@ class ANTARESDispatcher(object):
         for k in instrument.data_server_conf_dict.keys():
            print ('dict:',k,instrument.data_server_conf_dict[k ])
 
-        config = DataServerConf(data_server_url=instrument.data_server_conf_dict['data_server_url'])
+        config = DataServerConf.from_conf_dict(instrument.data_server_conf_dict)
+
         #for v in vars(config):
         #   print('attr:', v, getattr(config, v))
 
@@ -111,16 +113,15 @@ class ANTARESDispatcher(object):
         print('--> config passed to init',config)
 
         if config is not None:
-
+            
             pass
-
 
 
         elif instrument is not None and hasattr(instrument,'data_server_conf_dict'):
 
             print('--> from data_server_conf_dict')
             try:
-                config = DataServerConf(data_server_url=instrument.data_server_conf_dict['data_server_url'])
+                config = DataServerConf.from_conf_dict(instrument.data_server_conf_dict)
 
                 print('config', config)
                 for v in vars(config):
@@ -188,9 +189,6 @@ class ANTARESDispatcher(object):
         url = "%s/%s" % (self.data_server_url, 'api/v1.0/antares/test-connection')
         print('url', url)
 
-
-
-
         for i in range(max_trial):
             try:
                 res = requests.get("%s" % (url), params=None)
@@ -199,10 +197,10 @@ class ANTARESDispatcher(object):
                     no_connection =True
                 else:
                     no_connection=False
+
                     message = 'Connection OK'
                     query_out.set_done(message=message, debug_message=str(debug_message))
                     break
-
             except Exception as e:
                 no_connection = True
 
@@ -216,7 +214,7 @@ class ANTARESDispatcher(object):
             query_out.set_failed(message,
                                  message='connection_status=%s' % connection_status_message,
                                  logger=logger,
-                                 excep=e,
+                                 excep=e, # may be referenced before assignment
                                  e_message=message,
                                  debug_message=debug_message)
 
@@ -293,8 +291,8 @@ class ANTARESDispatcher(object):
 
 
 
-
-        except APIError as e:
+        # TODO: how can it be thrown?
+        except APIerror as e:
             run_query_message = 'API Exception on ANTARES backend'
             debug_message = e.message
 
