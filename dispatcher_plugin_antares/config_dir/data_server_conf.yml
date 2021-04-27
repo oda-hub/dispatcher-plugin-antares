@@ -2,5 +2,6 @@ instruments:
   antares:
     data_server_url: http://localhost:5002
     data_server_port: 5002
+    dummy_cache: dangerously-not-set-to-anything-useful
 
 
