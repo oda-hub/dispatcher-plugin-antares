@@ -1,4 +1,5 @@
--e git+https://github.com/oda-hub/dispatcher-app#egg=cdci_data_analysis
+# move to master or pypi later
+-e git+https://github.com/oda-hub/dispatcher-app@reusable-fixture#egg=cdci_data_analysis
 astropy
 simple_logger
 numpy
