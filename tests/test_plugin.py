@@ -1,17 +1,7 @@
-import subprocess
 import requests
 import time
-import re
 import json
-import signal
-import os
-import random
-import traceback
 import logging
-import jwt
-
-from threading import Thread
-from time import sleep
 
 import pytest
 
