@@ -195,6 +195,7 @@ class ANTARESDispatcher(object):
                 print('status_code',res.status_code)
                 if res.status_code !=200:
                     no_connection =True
+                    e = ConnectionError(f"Backend connection failed: {res.status_code}")
                 else:
                     no_connection=False
 
@@ -214,7 +215,7 @@ class ANTARESDispatcher(object):
             query_out.set_failed(message,
                                  message='connection_status=%s' % connection_status_message,
                                  logger=logger,
-                                 excep=e, # may be referenced before assignment
+                                 excep=e,
                                  e_message=message,
                                  debug_message=debug_message)
 
