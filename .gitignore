@@ -1,2 +1,5 @@
 dispatcher_plugin_antares/__pycache__/*
+tests/__pycache__/*
 .env
+.vscode
+ul_file_test.fits
