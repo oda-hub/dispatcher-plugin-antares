@@ -57,7 +57,7 @@ def test_dummy(dispatcher_live_fixture):
 
     logger.info("constructed server: %s", server)
     c = requests.get(server + "/run_analysis",
-                     params = default_params)
+                     params = dummy_params)
 
     logger.info("content: %s", c.text)
     jdata = c.json()
