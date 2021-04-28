@@ -18,11 +18,6 @@ Configuration for deployment
 ----------------------------
 - copy the `conf_file` from `cdci_antares_plugin/config_dir/data_server_conf.yml' and place in given directory
 - set the environment variable `CDCI_ANTARES_PLUGIN_CONF_FILE` to the path of the file conf_file 
-- edit the in `conf_file` the two keys:
+- edit the in `conf_file` the key:
     - `data_server_url:`  
     
-    these two keys must correspond to those in the antares-backend conf_file i.e.:
-   
-    - `data_server_url:`  -> `url:`
-   
-    respectively
