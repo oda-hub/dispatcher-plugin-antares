@@ -26,7 +26,7 @@ import base64
 from astropy.units import Unit
 
 from cdci_data_analysis.analysis.queries import ProductQuery
-from cdci_data_analysis.analysis.products import BaseQueryProduct,QueryOutput
+from cdci_data_analysis.analysis.products import BaseQueryProduct,QueryOutput, QueryProductList
 from oda_api.data_products import  ODAAstropyTable
 
 from .antares_dataserver_dispatcher import ANTARESDispatcher,ANTARESAnalysisException
@@ -261,8 +261,44 @@ class ANTARESpectrumQuery(ProductQuery):
 
 
         return query_out
+    
+    def get_dummy_products(self, instrument, config=None, **kwargs):
+        res = DummyAntaresResponse()
+        prod_list = ANTARESTable.build_from_res(res)
+        prod_list = QueryProductList(prod_list=prod_list)
+        return prod_list
 
 
+class DummyAntaresResponse():
+    def __init__(self):
+        pass
+
+    def json(self):
+        dummy_data = {"astropy_table": 
+                       {"binary": None, 
+                        "ascii": '''# %ECSV 0.9
+                                    # ---
+                                    # datatype:
+                                    # - {name: Index, datatype: float32, description: photon index}
+                                    # - {name: 1GeV_norm, unit: 1 / (cm2 GeV s), datatype: float32, description: Energy}
+                                    # meta: !!omap
+                                    # - {RA: null}
+                                    # - {DEC: null}
+                                    # - {ROI: null}
+                                    # schema: astropy-2.0
+                                    Index 1GeV_norm
+                                    1.53 8.85921e-11
+                                    1.95 1.45254e-08
+                                    3.0 0.000465467''', 
+                        "name": "astropy table", 
+                        "meta_data": '{"RA": null, "DEC": null, "ROI": null}'}, 
+                    "file_path": 
+                        "/antares/output/ul_file_test.txt"}
+        dummy_json = json.dumps(dummy_data)
+        return dummy_json
+
+    
+        
 
 def pl_function(energy, pl_index, norm):
     return np.power(energy, -pl_index) *  norm
