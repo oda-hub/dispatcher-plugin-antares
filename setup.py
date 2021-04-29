@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 from __future__ import absolute_import, division, print_function
 
@@ -7,26 +8,20 @@ from builtins import (bytes, str, open, super, range,
 __author__ = 'andrea tramacere'
 
 
-
-
-#!/usr/bin/env python
-
 from setuptools import setup, find_packages
-import  glob
-import re
+import glob
 
+install_req = [
+    'cdci_data_analysis',
+    'astropy',
+    'simple_logger',
+    'numpy'
+]
 
-f = open("./requirements.txt",'r')
-install_req=f.readlines()
-f.close()
-
-def reformat_git_req(req_str):
-    match = re.match('.*(git\+.+egg=(.+)$)', req_str)
-    if match:
-        req_str = "%s @ %s"%(match.group(2), match.group(1))
-    return req_str
-
-install_req = [reformat_git_req(x) for x in install_req]
+test_req = [
+    'pytest',
+    'pytest-depends',
+]
 
 packs=find_packages()
 
@@ -48,7 +43,7 @@ setup(name='dispatcher_plugin_antares',
       package_data={'dispatcher_plugin_antares':['config_dir/*']},
       include_package_data=True,
       install_requires=install_req,
+      extras_require = {
+          'test': test_req
+      }
 )
-
-
-
