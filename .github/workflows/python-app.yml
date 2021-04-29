@@ -26,6 +26,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest mypy pylint coverage
+        if [ -f actions-requirements.txt ]; then pip install -r actions-requirements.txt; fi
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Lint with flake8

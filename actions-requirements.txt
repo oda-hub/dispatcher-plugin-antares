@@ -1,0 +1,4 @@
+-e git+https://github.com/oda-hub/dispatcher-app#egg=cdci_data_analysis
+astropy
+simple_logger
+numpy
