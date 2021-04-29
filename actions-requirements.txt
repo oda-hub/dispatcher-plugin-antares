@@ -2,3 +2,4 @@
 astropy
 simple_logger
 numpy
+pytest-depends
