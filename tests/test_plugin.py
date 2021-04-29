@@ -35,14 +35,12 @@ def test_discover_plugin():
 
     assert 'dispatcher_plugin_antares' in  importer.cdci_plugins_dict.keys()
 
-    
-@pytest.mark.xfail
-def test_default(dispatcher_live_fixture):
+def test_dummy(dispatcher_live_fixture):
     server = dispatcher_live_fixture
 
     logger.info("constructed server: %s", server)
     c = requests.get(server + "/run_analysis",
-                     params = default_params)
+                     params = dummy_params)
 
     logger.info("content: %s", c.text)
     jdata = c.json()
@@ -52,12 +50,12 @@ def test_default(dispatcher_live_fixture):
 
     assert jdata['job_status'] == 'done'
     
-def test_dummy(dispatcher_live_fixture):
+def test_default(dispatcher_live_fixture):
     server = dispatcher_live_fixture
 
     logger.info("constructed server: %s", server)
     c = requests.get(server + "/run_analysis",
-                     params = dummy_params)
+                     params = default_params)
 
     logger.info("content: %s", c.text)
     jdata = c.json()
