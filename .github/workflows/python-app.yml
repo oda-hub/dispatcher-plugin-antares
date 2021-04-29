@@ -17,7 +17,7 @@ jobs:
     
     services:
       antares-backend:
-        image: densavchenko/antares:latest
+        image: densavchenko/antares:982b21e
         ports: 
         - 5002:8000
 
