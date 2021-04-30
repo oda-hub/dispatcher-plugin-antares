@@ -14,6 +14,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    services:
+      antares-backend:
+        image: densavchenko/antares:982b21e
+        ports: 
+        - 5002:8000
 
     steps:
     - uses: actions/checkout@v2
@@ -27,6 +33,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest mypy pylint coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install -e .[test]
 
     - name: Lint with flake8
       run: |

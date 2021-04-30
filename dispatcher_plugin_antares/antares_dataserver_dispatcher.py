@@ -235,6 +235,7 @@ class ANTARESDispatcher(object):
             res = requests.get("%s" % (url), params=None)
             if res.status_code != 200:
                 has_data = False
+                e = ConnectionError('"has data" test failed')
         except Exception as e:
             has_data = False
 

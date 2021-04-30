@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 from __future__ import absolute_import, division, print_function
 
@@ -7,19 +8,20 @@ from builtins import (bytes, str, open, super, range,
 __author__ = 'andrea tramacere'
 
 
-
-
-#!/usr/bin/env python
-
 from setuptools import setup, find_packages
-import  glob
+import glob
 
+install_req = [
+    'cdci_data_analysis',
+    'astropy',
+    'simple_logger',
+    'numpy'
+]
 
-
-f = open("./requirements.txt",'r')
-install_req=f.readlines()
-f.close()
-
+test_req = [
+    'pytest',
+    'pytest-depends',
+]
 
 packs=find_packages()
 
@@ -41,7 +43,7 @@ setup(name='dispatcher_plugin_antares',
       package_data={'dispatcher_plugin_antares':['config_dir/*']},
       include_package_data=True,
       install_requires=install_req,
+      extras_require = {
+          'test': test_req
+      }
 )
-
-
-
