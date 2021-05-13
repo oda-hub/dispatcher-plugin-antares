@@ -207,15 +207,15 @@ class ANTARESDispatcher(object):
 
             time.sleep(sleep_s)
 
-        if no_connection is True:
+        if no_connection:
             message = 'no data server connection'
             debug_message = 'no data server connection'
             connection_status_message = 'no data server connection'
 
-            query_out.set_failed(message,
-                                 message='connection_status=%s' % connection_status_message,
+            query_out.set_failed(failed_operation='data server connection',
+                                 message=f'connection_status={connection_status_message} trying to access {url}',
                                  logger=logger,
-                                 excep=e,
+                                 excep=None,
                                  e_message=message,
                                  debug_message=debug_message)
 
