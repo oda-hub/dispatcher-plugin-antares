@@ -128,5 +128,6 @@ class ScatterPlot(object):
         )
 
         layout.sizing_mode = 'scale_width'
+        layout.width = 500
 
         return components(layout)
