@@ -142,21 +142,21 @@ class ANTARESpectrumQuery(ProductQuery):
 
     def check_roi(self,v):
         if v < 0.1 or v > 2.5:
-            m = 'par ROI=%e outside ragnge [0.1 - 2.5]' % v
+            m = 'par ROI=%e outside range [0.1 - 2.5]' % v
             raise ANTARESAnalysisException(message=m, debug_message=m)
         else:
             pass
 
     def check_index(self,v):
         if v < 1.5 or v > 3.0:
-            m = 'par index=%e outside ragnge [1.5 - 3.0]' % v
+            m = 'par index=%e outside range [1.5 - 3.0]' % v
             raise ANTARESAnalysisException(message=m, debug_message=m)
         else:
             pass
 
     def check_decl(self,v):
         if v < -80 or v > 50:
-            m = 'par decl=%e outside ragnge [-80.0 - 50.0]' % v
+            m = 'par decl=%e outside range [-80.0 - 50.0]' % v
             raise ANTARESAnalysisException(message=m, debug_message=m)
         else:
             pass
