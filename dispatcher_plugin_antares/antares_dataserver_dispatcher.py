@@ -295,7 +295,8 @@ class ANTARESDispatcher(object):
             print('url', url, param_dict)
 
             res = requests.get("%s" % (url), params = param_dict)
-            query_out.set_done(message=message, debug_message=str(debug_message),job_status='done')
+            query_out.set_done(message=message, debug_message=str(debug_message), job_status='done', 
+                comment="Please note that 'Start time' (T1) and 'End time' (T2) parameters are ignored. Instead, all time span of the data release is used.")
 
 
 
