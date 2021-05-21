@@ -122,12 +122,12 @@ class ScatterPlot(object):
         self.fig.line(x, y, legend=legend, line_color=color)
 
     def get_html_draw(self):
-        self.fig.sizing_mode = 'scale_width'
+        #self.fig.sizing_mode = 'scale_width'
         layout = row(
             self.fig
         )
 
-        layout.sizing_mode = 'scale_width'
-        layout.width = 500
+        #layout.sizing_mode = 'fixed'
+        #layout.width = 500
 
         return components(layout)
