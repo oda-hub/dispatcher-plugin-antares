@@ -95,16 +95,16 @@ class ANTARESTable(BaseQueryProduct):
 
         _o_dict = json.loads(res.json())
 
-        src_name='test'
+        src_name='src'
         t_rec = ascii.read(_o_dict['astropy_table']['ascii'])
 
 
         try:
             filename, file_extension = os.path.splitext(os.path.basename(_o_dict['file_path']))
         except:
-            filename = src_name
+            filename = src_name + '_'
 
-        file_name=filename+'.fits'
+        file_name=filename[:filename.find('_job')]+'.fits'
         t_rec.meta['filename']=file_name
         #print('->file_name',file_name)
         antares_table = cls(name=src_name,
@@ -141,27 +141,27 @@ class ANTARESpectrumQuery(ProductQuery):
         return prod_list
 
     def check_roi(self,v):
-        if v< 0.1 or v>2.5:
-            m = 'par ROI=%e outside ragnge [0.1 - 2.5]'%v
+        if v < 0.1 or v > 2.5:
+            m = 'par ROI=%e outside range [0.1 - 2.5]' % v
             raise ANTARESAnalysisException(message=m, debug_message=m)
         else:
             pass
 
     def check_index(self,v):
         if v < 1.5 or v > 3.0:
-            m = 'par index=%e outside ragnge [1.5 - 3.0]' % v
+            m = 'par index=%e outside range [1.5 - 3.0]' % v
             raise ANTARESAnalysisException(message=m, debug_message=m)
         else:
             pass
 
     def check_decl(self,v):
         if v < -80 or v > 50:
-            m = 'par decl=%e outside ragnge [-80.0 - 50.0]' % v
+            m = 'par decl=%e outside range [-80.0 - 50.0]' % v
             raise ANTARESAnalysisException(message=m, debug_message=m)
         else:
             pass
 
-    def get_data_server_query(self, instrument,config=None):
+    def get_data_server_query(self, instrument, config=None):
 
         src_name = instrument.get_par_by_name('src_name').value
 

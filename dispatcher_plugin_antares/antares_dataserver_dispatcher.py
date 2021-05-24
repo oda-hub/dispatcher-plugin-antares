@@ -100,7 +100,6 @@ class ANTARESDispatcher(object):
         self.task = task
         self.param_dict = param_dict
 
-        print ('TEST')
         for k in instrument.data_server_conf_dict.keys():
            print ('dict:',k,instrument.data_server_conf_dict[k ])
 
@@ -148,7 +147,7 @@ class ANTARESDispatcher(object):
 
         else:
 
-            raise ANTARESException(message='instrument cannot be None', debug_message='instrument se to None in ANTARESDispatcher __init__')
+            raise ANTARESException(message='instrument cannot be None', debug_message='instrument set to None in ANTARESDispatcher __init__')
 
         try:
             _data_server_url = config.data_server_url
@@ -261,7 +260,7 @@ class ANTARESDispatcher(object):
 
 
 
-    def run_query(self,call_back_url=None,run_asynch=False,logger=None,task=None,param_dict=None,):
+    def run_query(self,call_back_url=None, run_asynch=False, logger=None, task=None, param_dict=None):
 
         res = None
         # status = 0
@@ -275,7 +274,7 @@ class ANTARESDispatcher(object):
 
 
             print('--ANTARES disp--')
-            print('call_back_url',call_back_url)
+            print('call_back_url', call_back_url)
             print('data_server_url', self.data_server_url)
             print('*** run_asynch', run_asynch)
 
@@ -284,12 +283,20 @@ class ANTARESDispatcher(object):
 
             if param_dict is None:
                 param_dict=self.param_dict
+            
+            # we want to pass job_id to backend but it is not in this scope, so deduce  
+            try:
+                job_id = call_back_url[call_back_url.index('job_id=')+7:].split('&')[0]
+                param_dict['job_id'] = job_id
+            except:
+                pass
 
             url = "%s/%s" % (self.data_server_url, task)
-            print('url', url,param_dict)
+            print('url', url, param_dict)
 
-            res = requests.get("%s" % (url), params=param_dict)
-            query_out.set_done(message=message, debug_message=str(debug_message),job_status='done')
+            res = requests.get("%s" % (url), params = param_dict)
+            query_out.set_done(message=message, debug_message=str(debug_message), job_status='done', 
+                comment="Please note that 'Start time' (T1) and 'End time' (T2) parameters are ignored. Instead, all time span of the data release is used.")
 
 
 
