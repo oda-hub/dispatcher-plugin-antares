@@ -205,45 +205,42 @@ class ANTARESpectrumQuery(ProductQuery):
 
     def process_product_method(self, instrument, prod_list,api=False,config=None):
 
-        _names = []
-        _table_path = []
-        _html_fig = []
-
-        _data_list=[]
-        _binary_data_list=[]
-        for query_prod in prod_list.prod_list:
+        
+        # assume prod_list contains only one element (which is really the case now)
+        # then format output as one image for frontend to provide better display, and list with one element for oda_api
+        query_prod = prod_list.prod_list[0]
 
             #print('query_prod',vars(query_prod))
-            query_prod.write()
+        query_prod.write()
 
 
 
-            #if api==False:
-            #print('--->, query_prod.meta_data',query_prod.meta_data)
+        #if api==False:
+        #print('--->, query_prod.meta_data',query_prod.meta_data)
 
-            script, div = get_spectrum_plot(query_prod.file_path.path)
+        script, div = get_spectrum_plot(query_prod.file_path.path)
 
-            #res, query_out=q.run_query()
-            #print('=>>>> figure res ',res.json())
-            #res=json.loads(res.json())
-            html_dict = {}
-            html_dict['script'] = script
-            html_dict['div'] = div
-            plot_dict = {}
-            plot_dict['image'] = html_dict
-            plot_dict['header_text'] = ''
-            plot_dict['table_text'] = ''
-            plot_dict['footer_text'] = ''
+        #res, query_out=q.run_query()
+        #print('=>>>> figure res ',res.json())
+        #res=json.loads(res.json())
+        html_dict = {}
+        html_dict['script'] = script
+        html_dict['div'] = div
+        plot_dict = {}
+        plot_dict['image'] = html_dict
+        plot_dict['header_text'] = ''
+        plot_dict['table_text'] = ''
+        plot_dict['footer_text'] = ''
 
-            _n=query_prod.name+'_%s'%query_prod.file_path.name
-            _s = pathlib.PurePosixPath(_n).suffix
-            _n=_n.replace(_s,'')
-            _names.append(_n)
-            _table_path.append(str(query_prod.file_path.name))
-            _html_fig.append(plot_dict)
+        _n=query_prod.name+'_%s'%query_prod.file_path.name
+        _s = pathlib.PurePosixPath(_n).suffix
+        _n=_n.replace(_s,'')
+        _names = _n
+        _table_path = str(query_prod.file_path.name)
+        _html_fig = plot_dict
 
-            if api is True:
-                _data_list.append(query_prod.data.encode(use_binary=False))
+        if api is True:
+            _data_list = [query_prod.data.encode(use_binary=False)]
 
 
         query_out = QueryOutput()
