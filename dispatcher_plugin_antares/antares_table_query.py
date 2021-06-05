@@ -294,14 +294,6 @@ class DummyAntaresResponse():
         dummy_json = json.dumps(dummy_data)
         return dummy_json
 
-    
-        
-
-def pl_function(energy, pl_index, norm):
-    return np.power(energy, -pl_index) *  norm
-
-
-
 
 def get_spectrum_plot(file_path):
 
@@ -311,19 +303,9 @@ def get_spectrum_plot(file_path):
 
             if len(ul_table)>0:
 
-                ul_sed = np.zeros(size)
-                e_range = np.logspace(-1, 6, size)
-
-                for ID, energy in enumerate(e_range):
-                    ul_sed[ID] = np.max(pl_function(energy, ul_table['Index'], ul_table['1GeV_norm']))
-            else:
-                ul_sed=None
-                e_range=None
-
-            if ul_sed is not None:
-                ul_sed =ul_sed*ul_table['1GeV_norm'].unit
-                e_range= e_range*Unit('GeV')
-                ul_sed= ul_sed * e_range  *e_range
+                e_range = ul_table["E"]
+                ul_sed = ul_table["flux_UL * E^2"]
+            
                 sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
                                   y_axis_type='log', x_axis_type='log',title='UL')
 
