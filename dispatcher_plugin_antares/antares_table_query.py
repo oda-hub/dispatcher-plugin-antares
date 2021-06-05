@@ -260,38 +260,26 @@ class ANTARESpectrumQuery(ProductQuery):
         return query_out
     
     def get_dummy_products(self, instrument, config=None, **kwargs):
-        res = DummyAntaresResponse()
+        res = DummyAntaresResponse(os.path.join(config.dummy_cache, 'ant_ul.txt'))
         prod_list = ANTARESTable.build_from_res(res)
         prod_list = QueryProductList(prod_list=prod_list)
         return prod_list
 
 
 class DummyAntaresResponse():
-    def __init__(self):
-        pass
-
-    def json(self):
-        dummy_data = {"astropy_table": 
+    def __init__(self, dummy_file):
+        self.dummy_file = dummy_file
+        with open(dummy_file, 'r') as fd:
+            ascii = fd.read()
+        self.dummy_data = {"astropy_table": 
                        {"binary": None, 
-                        "ascii": '''# %ECSV 0.9
-                                    # ---
-                                    # datatype:
-                                    # - {name: Index, datatype: float32, description: photon index}
-                                    # - {name: 1GeV_norm, unit: 1 / (cm2 GeV s), datatype: float32, description: Energy}
-                                    # meta: !!omap
-                                    # - {RA: null}
-                                    # - {DEC: null}
-                                    # - {ROI: null}
-                                    # schema: astropy-2.0
-                                    Index 1GeV_norm
-                                    1.53 8.85921e-11
-                                    1.95 1.45254e-08
-                                    3.0 0.000465467''', 
+                        "ascii": ascii, 
                         "name": "astropy table", 
                         "meta_data": '{"RA": null, "DEC": null, "ROI": null}'}, 
-                    "file_path": 
-                        "/antares/output/ul_file_test.txt"}
-        dummy_json = json.dumps(dummy_data)
+                      "file_path": self.dummy_file}
+
+    def json(self):
+        dummy_json = json.dumps(self.dummy_data)
         return dummy_json
 
 
