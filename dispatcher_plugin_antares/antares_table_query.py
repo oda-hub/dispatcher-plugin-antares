@@ -270,12 +270,12 @@ class DummyAntaresResponse():
         self.dummy_file = dummy_file
         with open(dummy_file, 'r') as fd:
             ascii = fd.read()
-        self.dummy_data = {"astropy_table": 
+        self.dummy_data = [{"astropy_table": 
                        {"binary": None, 
                         "ascii": ascii, 
                         "name": "astropy table", 
                         "meta_data": '{"RA": null, "DEC": null, "ROI": null}'}, 
-                      "file_path": self.dummy_file}
+                      "file_path": self.dummy_file}]
 
     def json(self):
         dummy_json = json.dumps(self.dummy_data)
