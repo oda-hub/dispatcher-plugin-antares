@@ -86,35 +86,36 @@ class ANTARESTable(BaseQueryProduct):
     def build_from_res(cls,res,out_dir=None,prod_prefix='antares_table'):
 
         prod_list = []
-
+        
         if out_dir is None:
             out_dir = './'
 
         if prod_prefix is None:
             prod_prefix=''
 
-        _o_dict = json.loads(res.json())
+        _o_list = json.loads(res.json())
+        
+        for _o_dict in _o_list:
+            src_name='src'
+            t_rec = ascii.read(_o_dict['astropy_table']['ascii'])
 
-        src_name='src'
-        t_rec = ascii.read(_o_dict['astropy_table']['ascii'])
 
+            try:
+                filename, file_extension = os.path.splitext(os.path.basename(_o_dict['file_path']))
+            except:
+                filename = src_name + '_'
 
-        try:
-            filename, file_extension = os.path.splitext(os.path.basename(_o_dict['file_path']))
-        except:
-            filename = src_name + '_'
+            file_name=filename[:filename.find('_job')]+'.fits'
+            t_rec.meta['filename']=file_name
+            #print('->file_name',file_name)
+            antares_table = cls(name=src_name,
+                            file_name=file_name,
+                            table=t_rec,
+                            src_name=src_name,
+                            meta_data=t_rec.meta,
+                            out_dir=out_dir)
 
-        file_name=filename[:filename.find('_job')]+'.fits'
-        t_rec.meta['filename']=file_name
-        #print('->file_name',file_name)
-        antares_table = cls(name=src_name,
-                          file_name=file_name,
-                          table=t_rec,
-                          src_name=src_name,
-                          meta_data=t_rec.meta,
-                          out_dir=out_dir)
-
-        prod_list.append(antares_table)
+            prod_list.append(antares_table)
 
         return prod_list
 
@@ -206,13 +207,11 @@ class ANTARESpectrumQuery(ProductQuery):
     def process_product_method(self, instrument, prod_list,api=False,config=None):
 
         
-        # assume prod_list contains only one element (which is really the case now)
-        # then format output as one image for frontend to provide better display, and list with one element for oda_api
         query_prod = prod_list.prod_list[0]
-
-            #print('query_prod',vars(query_prod))
         query_prod.write()
-
+        
+        query_prod_1 = prod_list.prod_list[1]
+        query_prod_1.write()
 
 
         #if api==False:
@@ -240,7 +239,7 @@ class ANTARESpectrumQuery(ProductQuery):
         _html_fig = plot_dict
 
         if api is True:
-            _data_list = [query_prod.data.encode(use_binary=False)]
+            _data_list = [query_prod.data.encode(use_binary=False), query_prod_1.data.encode(use_binary=False)]
 
 
         query_out = QueryOutput()
