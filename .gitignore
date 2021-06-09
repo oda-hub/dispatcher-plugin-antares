@@ -5,3 +5,4 @@ tests/__pycache__/*
 ul_file_test.fits
 scratch_sid*
 dispatcher_plugin_antares.egg-info/*
+.venv

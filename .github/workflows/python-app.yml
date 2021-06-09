@@ -17,7 +17,7 @@ jobs:
     
     services:
       antares-backend:
-        image: densavchenko/antares:982b21e
+        image: densavchenko/antares:5429d35
         ports: 
         - 5002:8000
 
@@ -34,6 +34,7 @@ jobs:
         pip install flake8 pytest mypy pylint coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         pip install -e .[test]
+        pip install -e git+https://github.com/oda-hub/dispatcher-app.git#egg=cdci_data_analysis
 
     - name: Lint with flake8
       run: |

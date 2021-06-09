@@ -81,7 +81,7 @@ def test_file_download(dispatcher_live_fixture):
                     params = {
                         'session_id': jdata['job_monitor']['session_id'],
                         'download_file_name': jdata['products']['download_file_name'],
-                        'file_list': jdata['products']['file_name'][0],
+                        'file_list': jdata['products']['file_name'],
                         'query_status': 'ready',
                         'job_id': jdata['job_monitor']['job_id'],
                         'instrument': 'antares'

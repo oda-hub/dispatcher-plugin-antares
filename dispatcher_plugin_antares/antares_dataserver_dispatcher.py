@@ -255,7 +255,7 @@ class ANTARESDispatcher(object):
 
 
         print('-> test_has_input_products passed')
-        return query_out,[1]
+        return query_out,[]
 
 
 
