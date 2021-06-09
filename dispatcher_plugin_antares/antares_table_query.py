@@ -259,23 +259,26 @@ class ANTARESpectrumQuery(ProductQuery):
         return query_out
     
     def get_dummy_products(self, instrument, config=None, **kwargs):
-        res = DummyAntaresResponse(os.path.join(config.dummy_cache, 'ant_ul.txt'))
+        res = DummyAntaresResponse(os.path.join(config.dummy_cache, 'ant_ul.txt'),
+                                   os.path.join(config.dummy_cache, 'byind_ant_ul.txt'))
         prod_list = ANTARESTable.build_from_res(res)
         prod_list = QueryProductList(prod_list=prod_list)
         return prod_list
 
 
 class DummyAntaresResponse():
-    def __init__(self, dummy_file):
-        self.dummy_file = dummy_file
-        with open(dummy_file, 'r') as fd:
-            ascii = fd.read()
-        self.dummy_data = [{"astropy_table": 
+    def __init__(self, *dummy_files):
+        self.dummy_data = []
+        for dummy_file in dummy_files:
+            self.dummy_file = dummy_file
+            with open(dummy_file, 'r') as fd:
+                ascii = fd.read()
+                self.dummy_data.append({"astropy_table": 
                        {"binary": None, 
                         "ascii": ascii, 
                         "name": "astropy table", 
                         "meta_data": '{"RA": null, "DEC": null, "ROI": null}'}, 
-                      "file_path": self.dummy_file}]
+                      "file_path": self.dummy_file})
 
     def json(self):
         dummy_json = json.dumps(self.dummy_data)
