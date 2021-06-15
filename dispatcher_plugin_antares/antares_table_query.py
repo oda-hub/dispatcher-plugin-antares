@@ -86,35 +86,36 @@ class ANTARESTable(BaseQueryProduct):
     def build_from_res(cls,res,out_dir=None,prod_prefix='antares_table'):
 
         prod_list = []
-
+        
         if out_dir is None:
             out_dir = './'
 
         if prod_prefix is None:
             prod_prefix=''
 
-        _o_dict = json.loads(res.json())
+        _o_list = json.loads(res.json())
+        
+        for _o_dict in _o_list:
+            src_name='src'
+            t_rec = ascii.read(_o_dict['astropy_table']['ascii'])
 
-        src_name='src'
-        t_rec = ascii.read(_o_dict['astropy_table']['ascii'])
 
+            try:
+                filename, file_extension = os.path.splitext(os.path.basename(_o_dict['file_path']))
+            except:
+                filename = src_name + '_'
 
-        try:
-            filename, file_extension = os.path.splitext(os.path.basename(_o_dict['file_path']))
-        except:
-            filename = src_name + '_'
+            file_name=filename[:filename.find('_job')]+'.fits'
+            t_rec.meta['filename']=file_name
+            #print('->file_name',file_name)
+            antares_table = cls(name=src_name,
+                            file_name=file_name,
+                            table=t_rec,
+                            src_name=src_name,
+                            meta_data=t_rec.meta,
+                            out_dir=out_dir)
 
-        file_name=filename[:filename.find('_job')]+'.fits'
-        t_rec.meta['filename']=file_name
-        #print('->file_name',file_name)
-        antares_table = cls(name=src_name,
-                          file_name=file_name,
-                          table=t_rec,
-                          src_name=src_name,
-                          meta_data=t_rec.meta,
-                          out_dir=out_dir)
-
-        prod_list.append(antares_table)
+            prod_list.append(antares_table)
 
         return prod_list
 
@@ -205,45 +206,40 @@ class ANTARESpectrumQuery(ProductQuery):
 
     def process_product_method(self, instrument, prod_list,api=False,config=None):
 
-        _names = []
-        _table_path = []
-        _html_fig = []
-
-        _data_list=[]
-        _binary_data_list=[]
-        for query_prod in prod_list.prod_list:
-
-            #print('query_prod',vars(query_prod))
-            query_prod.write()
+        
+        query_prod = prod_list.prod_list[0]
+        query_prod.write()
+        
+        query_prod_1 = prod_list.prod_list[1]
+        query_prod_1.write()
 
 
+        #if api==False:
+        #print('--->, query_prod.meta_data',query_prod.meta_data)
 
-            #if api==False:
-            #print('--->, query_prod.meta_data',query_prod.meta_data)
+        script, div = get_spectrum_plot(query_prod.file_path.path)
 
-            script, div = get_spectrum_plot(query_prod.file_path.path)
+        #res, query_out=q.run_query()
+        #print('=>>>> figure res ',res.json())
+        #res=json.loads(res.json())
+        html_dict = {}
+        html_dict['script'] = script
+        html_dict['div'] = div
+        plot_dict = {}
+        plot_dict['image'] = html_dict
+        plot_dict['header_text'] = ''
+        plot_dict['table_text'] = ''
+        plot_dict['footer_text'] = ''
 
-            #res, query_out=q.run_query()
-            #print('=>>>> figure res ',res.json())
-            #res=json.loads(res.json())
-            html_dict = {}
-            html_dict['script'] = script
-            html_dict['div'] = div
-            plot_dict = {}
-            plot_dict['image'] = html_dict
-            plot_dict['header_text'] = ''
-            plot_dict['table_text'] = ''
-            plot_dict['footer_text'] = ''
+        _n=query_prod.name+'_%s'%query_prod.file_path.name
+        _s = pathlib.PurePosixPath(_n).suffix
+        _n=_n.replace(_s,'')
+        _names = _n
+        _table_path = str(query_prod.file_path.name)
+        _html_fig = plot_dict
 
-            _n=query_prod.name+'_%s'%query_prod.file_path.name
-            _s = pathlib.PurePosixPath(_n).suffix
-            _n=_n.replace(_s,'')
-            _names.append(_n)
-            _table_path.append(str(query_prod.file_path.name))
-            _html_fig.append(plot_dict)
-
-            if api is True:
-                _data_list.append(query_prod.data.encode(use_binary=False))
+        if api is True:
+            _data_list = [query_prod.data.encode(use_binary=False), query_prod_1.data.encode(use_binary=False)]
 
 
         query_out = QueryOutput()
@@ -263,47 +259,30 @@ class ANTARESpectrumQuery(ProductQuery):
         return query_out
     
     def get_dummy_products(self, instrument, config=None, **kwargs):
-        res = DummyAntaresResponse()
+        res = DummyAntaresResponse(os.path.join(config.dummy_cache, 'ant_ul.txt'),
+                                   os.path.join(config.dummy_cache, 'byind_ant_ul.txt'))
         prod_list = ANTARESTable.build_from_res(res)
         prod_list = QueryProductList(prod_list=prod_list)
         return prod_list
 
 
 class DummyAntaresResponse():
-    def __init__(self):
-        pass
-
-    def json(self):
-        dummy_data = {"astropy_table": 
+    def __init__(self, *dummy_files):
+        self.dummy_data = []
+        for dummy_file in dummy_files:
+            self.dummy_file = dummy_file
+            with open(dummy_file, 'r') as fd:
+                ascii = fd.read()
+                self.dummy_data.append({"astropy_table": 
                        {"binary": None, 
-                        "ascii": '''# %ECSV 0.9
-                                    # ---
-                                    # datatype:
-                                    # - {name: Index, datatype: float32, description: photon index}
-                                    # - {name: 1GeV_norm, unit: 1 / (cm2 GeV s), datatype: float32, description: Energy}
-                                    # meta: !!omap
-                                    # - {RA: null}
-                                    # - {DEC: null}
-                                    # - {ROI: null}
-                                    # schema: astropy-2.0
-                                    Index 1GeV_norm
-                                    1.53 8.85921e-11
-                                    1.95 1.45254e-08
-                                    3.0 0.000465467''', 
+                        "ascii": ascii, 
                         "name": "astropy table", 
                         "meta_data": '{"RA": null, "DEC": null, "ROI": null}'}, 
-                    "file_path": 
-                        "/antares/output/ul_file_test.txt"}
-        dummy_json = json.dumps(dummy_data)
+                      "file_path": self.dummy_file})
+
+    def json(self):
+        dummy_json = json.dumps(self.dummy_data)
         return dummy_json
-
-    
-        
-
-def pl_function(energy, pl_index, norm):
-    return np.power(energy, -pl_index) *  norm
-
-
 
 
 def get_spectrum_plot(file_path):
@@ -314,19 +293,9 @@ def get_spectrum_plot(file_path):
 
             if len(ul_table)>0:
 
-                ul_sed = np.zeros(size)
-                e_range = np.logspace(-1, 6, size)
-
-                for ID, energy in enumerate(e_range):
-                    ul_sed[ID] = np.max(pl_function(energy, ul_table['Index'], ul_table['1GeV_norm']))
-            else:
-                ul_sed=None
-                e_range=None
-
-            if ul_sed is not None:
-                ul_sed =ul_sed*ul_table['1GeV_norm'].unit
-                e_range= e_range*Unit('GeV')
-                ul_sed= ul_sed * e_range  *e_range
+                e_range = ul_table["E"]
+                ul_sed = ul_table["flux_UL * E^2"]
+            
                 sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
                                   y_axis_type='log', x_axis_type='log',title='UL')
 
