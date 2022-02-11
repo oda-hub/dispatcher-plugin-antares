@@ -30,7 +30,7 @@ from cdci_data_analysis.analysis.products import BaseQueryProduct,QueryOutput, Q
 from oda_api.data_products import  ODAAstropyTable
 
 from .antares_dataserver_dispatcher import ANTARESDispatcher,ANTARESAnalysisException
-from .plot_tools import  ScatterPlot
+from cdci_data_analysis.analysis.plot_tools import  ScatterPlot
 
 
 
@@ -214,19 +214,8 @@ class ANTARESpectrumQuery(ProductQuery):
         query_prod_1.write()
 
 
-        #if api==False:
-        #print('--->, query_prod.meta_data',query_prod.meta_data)
-
-        script, div = get_spectrum_plot(query_prod.file_path.path)
-
-        #res, query_out=q.run_query()
-        #print('=>>>> figure res ',res.json())
-        #res=json.loads(res.json())
-        html_dict = {}
-        html_dict['script'] = script
-        html_dict['div'] = div
         plot_dict = {}
-        plot_dict['image'] = html_dict
+        plot_dict['image'] = get_spectrum_plot(query_prod.file_path.path)
         plot_dict['header_text'] = ''
         plot_dict['table_text'] = ''
         plot_dict['footer_text'] = ''
@@ -287,29 +276,26 @@ class DummyAntaresResponse():
 
 def get_spectrum_plot(file_path):
 
-        try:
-            size=100
-            ul_table= ANTARESAstropyTable.from_file(file_path=file_path,format='fits').table
+    try:
+        size=100
+        ul_table= ANTARESAstropyTable.from_file(file_path=file_path,format='fits').table
 
-            if len(ul_table)>0:
+        if len(ul_table)>0:
 
-                e_range = ul_table["E"]
-                ul_sed = ul_table["flux_UL * E^2"]
-            
-                sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
-                                  y_axis_type='log', x_axis_type='log',title='UL')
+            e_range = ul_table["E"]
+            ul_sed = ul_table["flux_UL * E^2"]
+        
+            sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
+                                y_axis_type='log', x_axis_type='log',title='UL')
 
-                sp1.add_line(e_range, ul_sed)
-            else:
-                sp1 = ScatterPlot(w=600, h=400, x_label=str(Unit('GeV')), y_label='',
-                                  y_axis_type='log', x_axis_type='log', title='UL')
+            sp1.add_line(e_range, ul_sed, color='black')
+        else:
+            sp1 = ScatterPlot(w=600, h=400, x_label=str(Unit('GeV')), y_label='',
+                                y_axis_type='log', x_axis_type='log', title='UL')
 
-            script, div = sp1.get_html_draw()
-            #print('-> s,d',script,div)
-
-            return script, div
-
-        except Exception as e:
-            #print('qui',e)
-            raise ANTARESAnalysisException(message='problem in plot production',debug_message=repr(e))
+        return sp1.get_html_draw()
+        
+    except Exception as e:
+        #print('qui',e)
+        raise ANTARESAnalysisException(message='problem in plot production',debug_message=repr(e))
 
