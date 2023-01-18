@@ -1,22 +1,25 @@
+__author__ = "Andrea Tramacere, Denys Savchenko"
 
-from __future__ import absolute_import, division, print_function
+from . import conf_file
+from cdci_data_analysis.analysis.instrument import Instrument
 
-from builtins import (bytes, str, open, super, range,
-                      zip, round, input, int, pow, object, map, zip)
+from .antares_dataserver_dispatcher import ANTARESDispatcher
+from .antares_queries import ANTARESpectrumQuery, AntaresInstrumentQuery, AntaresSourceQuery
 
-__author__ = "Andrea Tramacere"
+def antares_factory():    
+    src_query = AntaresSourceQuery('source_query')
+    instr_query = AntaresInstrumentQuery('instrument_query')
+    antares_spectrum_query= ANTARESpectrumQuery('antares_spectrum_query')
 
-# Standard library
-# eg copy
-# absolute import rg:from copy import deepcopy
+    query_dictionary = {}
+    query_dictionary['antares_spectrum'] = 'antares_spectrum_query'
 
-# Dependencies
-# eg numpy 
-# absolute import eg: import numpy as np
+    return Instrument('antares', asynch=False,
+                      data_serve_conf_file=conf_file,
+                      src_query=src_query,
+                      instrumet_query=instr_query,
+                      product_queries_list=[antares_spectrum_query],
+                      data_server_query_class=ANTARESDispatcher,
+                      query_dictionary=query_dictionary)
 
-# Project
-# relative import eg: from .mod import f
-
-
-from .antares import  antares_factory
 instr_factory_list=[antares_factory]

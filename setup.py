@@ -21,6 +21,7 @@ install_req = [
 test_req = [
     'pytest',
     'pytest-depends',
+    'psutil',
 ]
 
 packs=find_packages()

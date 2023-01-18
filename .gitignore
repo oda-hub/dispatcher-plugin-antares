@@ -6,3 +6,7 @@ ul_file_test.fits
 scratch_sid*
 dispatcher_plugin_antares.egg-info/*
 .venv
+ant_u.fits
+byind_ant_u.fits
+tmp.fits.gz
+download_*/antares_table.fits.gz
