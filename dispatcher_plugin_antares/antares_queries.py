@@ -28,7 +28,10 @@ class AntaresSourceQuery(SourceQuery):
 
         sky_coords = ParameterTuple([RA, DEC], 'sky_coords')
 
-        token = String(name_format='str', name='token', value=None)
+        try:
+            token = String(name_format='str', name='token', value=None, is_optional=True)
+        except TypeError:
+            token = String(name_format='str', name='token', value=None)
 
         parameters_list=[sky_coords, token]
         super(SourceQuery, self).__init__(name, parameters_list)
