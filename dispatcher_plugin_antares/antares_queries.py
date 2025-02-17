@@ -4,6 +4,7 @@ import os
 
 import  json
 import pathlib
+import numpy as np
 from astropy.io import ascii
 from astropy.units import Unit
 
@@ -197,23 +198,41 @@ class ANTARESTable(BaseQueryProduct):
             size=100
             ul_table= self.data.table
 
+
             if len(ul_table)>0:
 
                 e_range = ul_table["E"]
                 ul_sed = ul_table["flux_UL * E^2"]
-            
+
+                log_e_range_min = np.log10(e_range.min().value)
+                log_e_range_max = np.log10(e_range.max().value)
+                x_margin = 0.1 * np.abs(log_e_range_min - log_e_range_max)
+                x_range = [10 ** (log_e_range_min - x_margin), 10 ** (log_e_range_max + x_margin)]
+
+                log_ul_sed_min = np.log10(ul_sed.min().value)
+                log_ul_sed_max = np.log10(ul_sed.max().value)
+                y_margin = 0.1 * np.abs(log_ul_sed_max - log_ul_sed_min)
+                y_range = [10 ** (log_ul_sed_min - y_margin), 10 ** (log_ul_sed_max + y_margin)]
+
                 sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
-                                    y_axis_type='log', x_axis_type='log',title='UL')
+                                  y_axis_type='log', x_axis_type='log',
+                                  x_range=x_range, y_range=y_range,
+                                  title='UL')
 
                 sp1.add_line(e_range, ul_sed, color='black')
             else:
+                x_range = []
+                y_range = []
+
                 sp1 = ScatterPlot(w=600, h=400, x_label=str(Unit('GeV')), y_label='',
-                                    y_axis_type='log', x_axis_type='log', title='UL')
+                                  y_axis_type='log', x_axis_type='log',
+                                  x_range=x_range, y_range=y_range,
+                                  title='UL')
 
             return sp1.get_html_draw()
             
         except Exception as e:
-            raise ANTARESAnalysisException(message='problem in plot production',debug_message=repr(e))
+            raise ANTARESAnalysisException(message='problem in plot production'  + str(e),debug_message=repr(e))
 
         
 
