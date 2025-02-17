@@ -41,7 +41,7 @@ class ANTARESUnknownException(ANTARESException):
 class ANTARESDispatcher(object):
 
     def __init__(self,config=None,task=None,param_dict=None,instrument=None):
-        logger.info('--> building class ANTARESDispatcher',instrument,config)
+        logger.info(f'--> building class ANTARESDispatcher for the instrument {instrument} with the config: {config}')
         #simple_logger.log()
         #simple_logger.logger.setLevel(logging.ERROR)
 
@@ -49,11 +49,11 @@ class ANTARESDispatcher(object):
         self.param_dict = param_dict
 
         for k in instrument.data_server_conf_dict.keys():
-           logger.info('dict:',k,instrument.data_server_conf_dict[k ])
+           logger.info(f'dict: {k} - {instrument.data_server_conf_dict[k]}')
 
         config = DataServerConf.from_conf_dict(instrument.data_server_conf_dict)
 
-        logger.info('--> config passed to init', config)
+        logger.info(f'--> config passed to init: {config}')
 
         if config is not None:
             pass
@@ -72,7 +72,7 @@ class ANTARESDispatcher(object):
 
         elif instrument is not None:
             try:
-                logger.info('--> plugin_conf_file',plugin_conf_file )
+                logger.info(f'--> plugin_conf_file: {plugin_conf_file}')
                 config=instrument.from_conf_file(plugin_conf_file)
 
             except Exception as e:
@@ -87,8 +87,7 @@ class ANTARESDispatcher(object):
         except Exception as e:
             raise RuntimeError("failed to use config ", e)
 
-        logger.info("data_server_url:", self.data_server_url)
-        #print("dataserver_cache:", self.dataserver_cache)
+        logger.info(f'data_server_url: {self.data_server_url}')
         logger.info('--> done')
 
     def test_communication(self, max_trial=10, sleep_s=1,logger=None):
@@ -99,12 +98,12 @@ class ANTARESDispatcher(object):
         debug_message='OK'
 
         url = "%s/%s" % (self.data_server_url, 'api/v1.0/antares/test-connection')
-        logger.info('url', url)
+        logger.info(f'url: {url}')
 
         for i in range(max_trial):
             try:
                 res = requests.get("%s" % (url), params=None)
-                logger.info('status_code',res.status_code)
+                logger.info(f'status_code: {res.status_code}')
                 if res.status_code !=200:
                     no_connection =True
                     e = ConnectionError(f"Backend connection failed: {res.status_code}")
@@ -153,9 +152,9 @@ class ANTARESDispatcher(object):
 
         try:
             logger.info('--ANTARES disp--')
-            logger.info('call_back_url', call_back_url)
-            logger.info('data_server_url', self.data_server_url)
-            logger.info('*** run_asynch', run_asynch)
+            logger.info(f'fcall_back_url: {call_back_url}')
+            logger.info(f'data_server_url: {self.data_server_url}')
+            logger.info(f'*** run_asynch: {run_asynch}')
 
             if task is None:
                 task=self.task
@@ -172,7 +171,7 @@ class ANTARESDispatcher(object):
                 pass
 
             url = "%s/%s" % (self.data_server_url, task)
-            logger.info('url', url, param_dict)
+            logger.info(f'url: {url}\nparam_dic: {param_dict}')
 
             res = requests.get("%s" % (url), params = param_dict)
             query_out.set_done(message=message, debug_message=str(debug_message), job_status='done')
