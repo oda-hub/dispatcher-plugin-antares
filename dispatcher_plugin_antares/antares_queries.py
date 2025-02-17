@@ -224,7 +224,7 @@ class ANTARESTable(BaseQueryProduct):
             return sp1.get_html_draw()
             
         except Exception as e:
-            raise ANTARESAnalysisException(message='problem in plot production',debug_message=repr(e))
+            raise ANTARESAnalysisException(message='problem in plot production'  + str(e),debug_message=repr(e))
 
         
 
