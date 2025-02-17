@@ -1,4 +1,7 @@
-cdci_data_analysis
+# cdci_data_analysis
+-e git+https://github.com/oda-hub/dispatcher-app.git@plot-tools-in-oda-api#egg=cdci_data_analysis
+-e git+https://github.com/oda-hub/oda_api.git@no-dispatcher#egg=oda_api
+
 astropy
 simple_logger
 numpy

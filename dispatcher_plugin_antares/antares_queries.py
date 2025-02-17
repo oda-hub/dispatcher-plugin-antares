@@ -197,18 +197,25 @@ class ANTARESTable(BaseQueryProduct):
             size=100
             ul_table= self.data.table
 
+            x_range = [(x - dx).min(), (x + dx).max()]
+            y_range = [(y - dy).min(), (y + dy).max()]
+
             if len(ul_table)>0:
 
                 e_range = ul_table["E"]
                 ul_sed = ul_table["flux_UL * E^2"]
-            
+
                 sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
-                                    y_axis_type='log', x_axis_type='log',title='UL')
+                                  y_axis_type='log', x_axis_type='log',
+                                  x_range=x_range, y_range=y_range,
+                                  title='UL')
 
                 sp1.add_line(e_range, ul_sed, color='black')
             else:
                 sp1 = ScatterPlot(w=600, h=400, x_label=str(Unit('GeV')), y_label='',
-                                    y_axis_type='log', x_axis_type='log', title='UL')
+                                  y_axis_type='log', x_axis_type='log',
+                                  x_range=x_range, y_range=y_range,
+                                  title='UL')
 
             return sp1.get_html_draw()
             
