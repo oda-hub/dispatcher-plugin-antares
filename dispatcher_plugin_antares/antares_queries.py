@@ -3,6 +3,7 @@ __author__ = "Andrea Tramacere, Denys Savchenko"
 import os
 
 import  json
+import math
 import pathlib
 import numpy as np
 from astropy.io import ascii
@@ -204,11 +205,15 @@ class ANTARESTable(BaseQueryProduct):
                 e_range = ul_table["E"]
                 ul_sed = ul_table["flux_UL * E^2"]
 
-                x_margin = 0.1 * np.abs(e_range.min().value - e_range.max().value)
-                y_margin = 0.1 * np.abs(ul_sed.min().value - ul_sed.max().value)
+                log_e_range_min = np.log10(e_range.min().value)
+                log_e_range_max = np.log10(e_range.max().value)
+                x_margin = 0.1 * np.abs(log_e_range_min - log_e_range_max)
+                x_range = [10 ** (log_e_range_min - x_margin), 10 ** (log_e_range_max + x_margin)]
 
-                x_range = [e_range.min().value - x_margin, e_range.max().value + x_margin]
-                y_range = [ul_sed.min().value - y_margin, ul_sed.max().value + y_margin]
+                log_ul_sed_min = np.log10(ul_sed.min().value)
+                log_ul_sed_max = np.log10(ul_sed.max().value)
+                y_margin = 0.1 * np.abs(log_ul_sed_max - log_ul_sed_min)
+                y_range = [10 ** (log_ul_sed_min - y_margin), 10 ** (log_ul_sed_max + y_margin)]
 
                 sp1 = ScatterPlot(w=600, h=400, x_label=str(e_range.unit), y_label=str(ul_sed.unit),
                                   y_axis_type='log', x_axis_type='log',
