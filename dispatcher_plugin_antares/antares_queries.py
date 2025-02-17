@@ -3,7 +3,6 @@ __author__ = "Andrea Tramacere, Denys Savchenko"
 import os
 
 import  json
-import math
 import pathlib
 import numpy as np
 from astropy.io import ascii
